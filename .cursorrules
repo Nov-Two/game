@@ -1,0 +1,366 @@
+# GFR Vue 项目规则
+
+## 项目概述
+这是一个基于 Vue 3 + Vite + TypeScript 的游戏活动前端项目，专注于构建高性能、可维护的移动端 H5 活动页面。
+
+## 技术栈
+- **框架**: Vue 3.5+ (Composition API)
+- **构建工具**: Vite 7+
+- **语言**: TypeScript 5.9+
+- **状态管理**: Pinia 3+
+- **路由**: Vue Router 4+
+- **样式**: SCSS + PostCSS (px2rem)
+- **HTTP**: Axios
+- **音效**: Howler.js
+- **工具库**: @vueuse/core
+- **测试**: Vitest + Playwright
+- **代码规范**: ESLint + Oxlint + Prettier
+
+## Node 版本要求
+- Node.js: ^20.19.0 || >=22.12.0
+
+## 项目结构
+
+### 组件分层架构
+项目采用三层组件架构，严格区分组件职责：
+
+1. **`components/ui/`** - 通用 UI 组件
+   - 纯展示组件，无业务逻辑
+   - 可在任何项目中复用
+   - 通过 props 接收数据，通过 emits 传递事件
+   - 示例：button.vue, dialog.vue, loading.vue
+
+2. **`components/module/`** - 模块级组件
+   - 特定功能模块的业务组件
+   - 可能包含业务逻辑和状态
+   - 可在多个活动中复用
+   - 示例：home.vue
+
+3. **`components/app/`** - 应用级组件
+   - 与当前活动强相关的组件
+   - 依赖活动配置数据 (`eventConfig`)
+   - 与活动生命周期紧密相关
+   - 组件名建议以 `App` 前缀开头
+   - 示例：header.vue (AppHeader)
+
+### 目录结构
+```
+src/
+├── components/          # 组件目录
+│   ├── app/            # 应用级组件
+│   ├── module/         # 模块级组件
+│   └── ui/             # 通用 UI 组件
+├── composables/        # 组合式函数
+│   ├── useGA.ts       # Google Analytics
+│   └── useGame.ts     # 游戏 SDK 集成
+├── lib/                # 工具库
+│   ├── apis/          # API 定义
+│   ├── axios/         # HTTP 请求封装
+│   ├── session.ts     # 会话管理
+│   ├── sounds.ts      # 音效管理
+│   ├── storage.ts     # 本地存储
+│   └── utils.ts       # 工具函数
+├── stores/             # Pinia 状态管理
+├── router/             # 路由配置
+├── assets/             # 静态资源
+│   └── css/           # 全局样式
+└── main.ts            # 入口文件
+```
+
+## 代码规范
+
+### 命名约定
+- **组件文件**: kebab-case (如 `header.vue`, `sound-effect.vue`)
+- **组件名**: PascalCase (如 `AppHeader`, `GfrButton`)
+- **Composables**: camelCase with `use` prefix (如 `useGA`, `useGame`)
+- **常量**: UPPER_SNAKE_CASE (如 `API_BASE_URL`)
+- **函数/变量**: camelCase (如 `getUserInfo`, `isLoading`)
+
+### TypeScript 规范
+- 优先使用 TypeScript，避免使用 `any` (除非确实必要)
+- 为 props、emits、API 响应定义类型
+- 使用 `interface` 定义对象类型
+- 使用 `type` 定义联合类型或工具类型
+- 导出类型时使用 `export type` 或 `export interface`
+
+### Vue 组件规范
+- **使用 Composition API** 和 `<script setup>` 语法
+- **Props 定义**: 使用 `defineProps` 和 TypeScript 类型
+  ```typescript
+  interface Props {
+    title: string
+    count?: number
+  }
+  const props = defineProps<Props>()
+  ```
+- **Emits 定义**: 使用 `defineEmits` 和 TypeScript 类型
+  ```typescript
+  interface Emits {
+    (e: 'update', value: string): void
+    (e: 'close'): void
+  }
+  const emit = defineEmits<Emits>()
+  ```
+- **响应式状态**: 优先使用 `ref` 和 `computed`
+- **Store 使用**: 通过 `storeToRefs` 解构响应式状态
+  ```typescript
+  import { storeToRefs } from 'pinia'
+  const store = useDefaultStore()
+  const { eventConfig } = storeToRefs(store)
+  ```
+- **生命周期**: 使用 Composition API 的生命周期钩子
+- **组件名**: 允许单字组件名 (已配置 `vue/multi-word-component-names: off`)
+
+### 样式规范
+- **移动端适配**: 使用 `px` 单位，会自动转换为 `rem` (rootValue: 16, minPixelValue: 2)
+- **SCSS**: 使用 SCSS 编写样式，支持嵌套和变量
+- **CSS 变量**: 使用 CSS 自定义属性定义全局样式变量 (见 `globals.scss`)
+- **BEM 命名**: 建议使用 BEM 命名规范
+- **Scoped 样式**: 组件样式使用 `<style scoped>` 或 `<style module>`
+
+### CSS 变量规范
+项目定义了以下全局 CSS 变量 (在 `globals.scss` 中):
+- `--primary`: 主色调 (#ff725b)
+- `--dark`, `--light`: 深色和浅色
+- `--radius`: 圆角大小
+- `--gfr-transition-*`: 过渡动画相关
+- `--gfr-animation-*`: 动画相关
+- `--font-*`: 字体粗细
+- 组件特定变量: `--toast-*`, `--dialog-*`, `--scroll-area-*`
+
+### 动画规范
+项目提供了以下内置过渡和动画类:
+- **过渡类**: `gfr-bounce`, `gfr-rise`, `gfr-left`, `gfr-right`, `gfr-fade`
+- **动画类**: `gfr-anime-bounce`, `gfr-anime-fall`, `gfr-anime-shake`
+- **关键帧**: `gfr-rotate`, `gfr-float`, `gfr-float-scale`
+
+使用示例:
+```vue
+<Transition name="gfr-bounce">
+  <div v-if="show">Content</div>
+</Transition>
+```
+
+### API 请求规范
+- 使用 `lib/apis/` 中定义的 API 函数
+- 为 API 响应定义 TypeScript 类型 (见 `lib/apis/types.ts`)
+- 使用封装的 axios 实例 (处理了错误、取消等)
+- API 错误统一通过 Toast 提示
+
+### 状态管理规范
+- 使用 Pinia 进行状态管理
+- Store 定义在 `stores/` 目录
+- 主 Store: `useDefaultStore` (存储活动配置、用户信息等)
+- 类型定义在 `stores/types.ts`
+- 关键状态:
+  - `eventConfig`: 活动配置数据
+  - `userInfo`: 用户信息
+  - `transify`: 多语言文本
+
+### Composables 规范
+项目提供了以下 Composables:
+1. **`useGA`**: Google Analytics 埋点
+   - 自动初始化 GA
+   - 提供 `sendEvent` 方法发送事件
+   - 详见 `composables/docs/GA_COMPOSABLE_README.md`
+   
+2. **`useGame`**: 游戏 SDK 集成
+   - 提供游戏相关功能 (支付、分享等)
+   - 详见 `composables/docs/GAME_COMPOSABLE_README.md`
+
+3. **`useSound`**: 音效管理
+   - 统一的音效管理接口
+   - 提供 `playSounds`, `pauseSounds`, `stopSounds`, `muteSounds` 等方法
+   - 全局单例，确保应用共享同一个音效实例
+   - 详见 `composables/docs/SOUND_COMPOSABLE_README.md`
+
+### 音效管理
+- 使用 `composables/useSound.ts` 管理音效
+- 基于 Howler.js 封装
+- 支持背景音乐和音效
+- 全局单例管理
+- 示例:
+  ```typescript
+  import { useSound } from '@/composables/useSound'
+  const { playSounds, pauseSounds, stopSounds } = useSound()
+  playSounds('bgm')     // 播放背景音乐
+  playSounds('click')   // 播放点击音效
+  pauseSounds('bgm')    // 暂停音乐
+  stopSounds('bgm')     // 停止音乐
+  ```
+
+### 本地存储
+- 使用 `lib/storage.ts` 中的工具函数
+- 封装了 localStorage 操作
+- 支持 JSON 序列化/反序列化
+
+### 多语言 (i18n)
+- 多语言文本存储在 `mock/lang/` 目录
+- 通过 `store.state.transify` 访问
+- 默认文本定义在 `stores/default.ts` 的 `defaultTransify`
+- 文本 key 命名规范:
+  - `COMMON_*`: 通用文本
+  - `TOAST_*`: Toast 提示文本
+  - `POPUP_*`: 弹窗文本
+  - `UNIQUE_*`: 唯一物品相关文本
+
+## 构建和部署
+
+### 环境配置
+项目支持多环境配置:
+- `.env`: 开发环境
+- `.env.production`: 生产环境
+- `.env.goku`: Goku 模式 (特殊部署模式)
+
+### 构建模式
+- **开发模式**: `npm run dev`
+- **生产构建**: `npm run build` (输出到 `dist/`)
+- **Goku 构建**: `npm run build:goku` (输出到 `goku_dist/`)
+
+### 特殊脚本
+- `npm run obs`: 上传资源到 OBS
+- `npm run tpl`: 处理模板
+- `npm run transify`: 翻译文本
+
+### 构建优化
+- 生产环境自动移除 `console` 和 `debugger`
+- 使用代码分割 (按 js、css、images 分类)
+- 目标 ES2018
+
+## 测试规范
+
+### 单元测试
+- 使用 Vitest
+- 测试文件放在 `src/__tests__/`
+- 运行: `npm run test:unit`
+
+### E2E 测试
+- 使用 Playwright
+- 测试文件放在 `e2e/`
+- 运行: `npm run test:e2e`
+
+## 代码质量
+
+### Linting
+- 运行所有 lint: `npm run lint`
+- Oxlint: `npm run lint:oxlint` (快速检查正确性问题)
+- ESLint: `npm run lint:eslint` (完整 lint)
+
+### Formatting
+- 使用 Prettier 格式化: `npm run format`
+- 配置文件: `.prettierrc.json`
+
+### Git 提交
+- 提交前确保通过 lint 检查
+- 遵循语义化提交规范
+
+## 最佳实践
+
+### 组件设计
+1. **单一职责**: 每个组件只负责一个功能
+2. **Props Down, Events Up**: 父子组件通信遵循单向数据流
+3. **可复用性**: UI 组件应该高度可复用
+4. **组合优于继承**: 使用 Composables 共享逻辑
+
+### 性能优化
+1. **懒加载**: 路由和大组件使用懒加载
+2. **图片优化**: 使用合适的图片格式和尺寸
+3. **防抖节流**: 对频繁触发的事件使用防抖或节流
+4. **虚拟滚动**: 长列表使用虚拟滚动
+
+### 移动端适配
+1. **使用 px 单位**: 会自动转换为 rem
+2. **响应式设计**: 考虑不同屏幕尺寸
+3. **触摸优化**: 使用合适的触摸事件
+4. **性能优先**: 移动端性能优化至关重要
+
+### 错误处理
+1. **API 错误**: 统一通过 Toast 提示
+2. **异常捕获**: 关键操作使用 try-catch
+3. **用户友好**: 错误提示清晰、友好
+
+### 安全性
+1. **XSS 防护**: 不直接使用 `v-html`，必要时进行清理
+2. **敏感信息**: 不在前端存储敏感信息
+3. **HTTPS**: 生产环境使用 HTTPS
+
+## 开发工具
+
+### VS Code 扩展
+推荐安装:
+- Vue (Official) - Vue 语言支持
+- ESLint - 代码检查
+- Prettier - 代码格式化
+- Vue.js devtools - Vue 调试工具
+
+### 调试
+- Chrome DevTools 开启 Custom Object Formatter
+- 使用 Vue Devtools 扩展
+
+## 注意事项
+
+### 路径别名
+- `@/` 指向 `src/` 目录
+- 使用别名而非相对路径
+
+### Mock 数据
+- 开发环境自动启用 Mock (vite-plugin-mock)
+- Mock 文件放在 `mock/` 目录
+- 支持 TypeScript
+
+### 特殊注意
+- 生产环境会移除所有 console 输出
+- 小于 2px 的值不会被转换为 rem
+- Goku 模式使用不同的字体文件 (`goku-font.scss`)
+
+## 资源管理
+
+### 静态资源
+- 图片: 放在 `public/` 或通过 CDN
+- 音频: 放在 `static/audio/`
+- 样式资源: 放在 `static/css/`
+
+### CDN 配置
+- 生产环境和 Goku 模式使用 CDN
+- CDN URL 通过环境变量配置
+
+## 快速参考
+
+### 常用命令
+```bash
+npm run dev          # 启动开发服务器
+npm run build        # 生产构建
+npm run preview      # 预览构建产物
+npm run lint         # 代码检查
+npm run format       # 代码格式化
+npm run test:unit    # 运行单元测试
+npm run test:e2e     # 运行 E2E 测试
+```
+
+### 常用导入
+```typescript
+// Store
+import { useDefaultStore } from '@/stores'
+import { storeToRefs } from 'pinia'
+
+// Composables
+import { useGA } from '@/composables/useGA'
+import { useGame } from '@/composables/useGame'
+import { useSound } from '@/composables/useSound'
+
+// Utils
+import { storage } from '@/lib/storage'
+
+// API
+import { getEventInfo, getEventHistory } from '@/lib/apis'
+```
+
+## 总结
+这是一个成熟的游戏活动前端项目模板，强调：
+- **类型安全**: TypeScript 全覆盖
+- **可维护性**: 清晰的代码结构和规范
+- **性能优化**: 针对移动端优化
+- **开发体验**: 完善的工具链和配置
+- **代码质量**: 严格的 lint 和测试
+
+遵循这些规则，可以确保代码质量和项目的长期可维护性。

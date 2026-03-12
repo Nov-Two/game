@@ -1,0 +1,41 @@
+// localization multiple languages
+/* ar */
+html[data-lang='ar'] {
+  --font-extra-bold: 700;
+  body {
+    font-family: 'GFF Latin', 'GFF Ar', sans-serif;
+  }
+
+}
+/* hi */
+html[data-lang='hi'] {
+  --font-extra-bold: 700;
+  body {
+    font-family: 'GFF Latin', 'GFF Devanagar', sans-serif;
+  }
+}
+/* th */
+html[data-lang='th'] {
+  --font-medium: 400;
+  --font-extra-bold: 700;
+  body {
+    font-family: 'GFF Latin', 'GFF Thai', sans-serif;
+  }
+}
+html[data-lang='zh'],
+html[data-lang='zh-Hant'],
+html[data-lang='zh-tw'] {
+  body {
+    font-family: 'GFF Latin', 'FZLTHB', sans-serif;
+  }
+}
+html[data-lang='vn'], html[data-lang='vi'] {
+  --font-medium: 400;
+  --font-extra-bold: 700;
+}
+// html[data-lang='ru'] {
+
+// }
+// html[data-lang='pt'], html[data-lang='pt-br'], html[data-lang='es'] {
+
+// }

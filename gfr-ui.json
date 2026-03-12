@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "components": [
+    "overlay",
+    "toast",
+    "loading",
+    "flexible",
+    "module",
+    "container",
+    "heading",
+    "button",
+    "dialog",
+    "scrollarea",
+    "content",
+    "rule",
+    "soundeffect"
+  ],
+  "targetDir": "./src/components/ui",
+  "framework": "vue",
+  "styling": "scss",
+  "typescript": true,
+  "packageManager": "npm"
+}
