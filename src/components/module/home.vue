@@ -4,14 +4,16 @@
     <GfrContainer class="app-home-main">
       <!-- 块1：标题 + 进度文案 -->
       <GfrContainer class="app-home-main__top">
-        <p class="app-home-main__top-tip">
-          {{ fixTransify('Team up with friends and unlock rewards!') }}
-        </p>
-        <GfrContainer class="app-home-progress">
-          <!-- <GfrHeading class="app-home-progress__text">
-            {{ fixTransify('Current Region Process:') }} <strong class="app-home-progress__value">89M</strong>
-          </GfrHeading> -->
-        </GfrContainer>
+        <div class="app-home-main__top-tip">
+          <GfrHeading class="app-home-top-text">
+            {{ fixTransify('Team up with friends and unlock rewards!') }}
+          </GfrHeading>
+        </div>
+        <div class="app-home-progress">
+          <GfrHeading class="app-home-top-text">
+            {{ fixTransify('Current Region Process:') }}
+          </GfrHeading>
+        </div>
       </GfrContainer>
 
       <!-- 块2：里程碑 + 奖励卡片 -->
@@ -50,13 +52,7 @@
 
       <!-- 块3：分享栏 -->
       <GfrContainer class="app-home-main__bottom">
-        <!-- <img
-          class="app-home-main__bottom-bg"
-          src="/static/images/share@1x.png"
-          srcset="/static/images/share@1x.png 1x, /static/images/share@2x.png 2x, /static/images/share@3x.png 3x"
-          alt=""
-          aria-hidden="true"
-        /> -->
+
       </GfrContainer>
     </GfrContainer>
 
@@ -68,11 +64,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useStore } from '@/stores'
 import GfrContainer from '@/components/ui/container.vue'
 import GfrHeading from '@/components/ui/heading.vue'
-import GfrButton from '@/components/ui/button.vue'
 
 const store = useStore()
 const { fixTransify } = store
@@ -80,26 +74,6 @@ const { fixTransify } = store
 defineOptions({
   name: 'AppHomeModule'
 })
-
-// 进度条百分比（后续可从 store/API 取）
-const progressPercent = 65
-const progressBarStyle = computed(() => ({
-  width: `${progressPercent}%`
-}))
-
-const milestones = [
-  { label: '200,000', reached: true },
-  { label: '300,000', reached: true },
-  { label: '600,000', reached: true },
-  { label: '10m', reached: false }
-]
-
-const rewardItems = [
-  { qty: 'x10', claimed: true, borderType: 'weilingqu', buttonType: 'weilingqu_btn' },
-  { qty: 'x10', claimed: true, borderType: 'zhenglingqu', buttonType: 'zhenglingqu_btn' },
-  { qty: 'x10', claimed: true, borderType: 'yilingqu', buttonType: 'claimed_btn' },
-  { qty: 'x10', claimed: true, borderType: 'yilingqu', buttonType: 'claimed_btn' }
-]
 </script>
 
 <style lang="scss" scoped>
@@ -108,6 +82,7 @@ const rewardItems = [
   gap: 22px;
   width: 100%;
   padding-bottom: 19px;
+  padding-top: 40px;
   min-height: 0;
   flex: 1;
 }
@@ -128,51 +103,26 @@ const rewardItems = [
   flex-direction: column;
   flex-shrink: 0;
   width: 100%;
-  height: 100px;
-  background-color: red;
+  // height: 100px;
 
-  .app-home-main__top-tip {
-    flex: 0 0 33.333%;
+  .app-home-top-text {
+    padding-left: 50px;
     display: flex;
+    align-items: baseline;
+    gap: 8px;
     margin: 0;
-    font-size: 18px;
-    font-weight: var(--font-bold);
     color: #fff;
-    line-height: 1.3;
   }
 
   .app-home-progress {
-    flex: 0 0 66.667%;
     width: 100%;
-    min-height: 0;
-    display: flex;
-    // align-items: center;
-    // justify-content: center;
-    // padding: 0 20px;
-    // box-sizing: border-box;
+    height: 80px;
     background-image: url('/static/images/current@1x.png');
-    background-image: image-set(
-      url('/static/images/current@1x.png') 1x,
-      url('/static/images/current@2x.png') 2x,
-      url('/static/images/current@3x.png') 3x
-    );
-    background-size: 100% 100%;
-    background-position: top center;
+    display:flex;
+    align-items: center;
+    background-size: cover;
+    background-position: center;
     background-repeat: no-repeat;
-    .app-home-progress__text {
-      text-align: center;
-      margin: 0;
-      font-size: 16px;
-      font-weight: var(--font-bold);
-      color: #fff;
-      line-height: 1.3;
-    }
-
-    .app-home-progress__value {
-      font-size: 28px;
-      font-weight: var(--font-extra-bold);
-      color: #ffd54f;
-    }
   }
 }
 
@@ -215,22 +165,13 @@ const rewardItems = [
 .app-home-main__bottom {
   position: relative;
   width: 100%;
-  height: 112px;
-  min-height: 112px;
+  height: 128px;
   flex-shrink: 0;
   overflow: hidden;
-  background-color: red;
-
-  .app-home-main__bottom-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: auto;
-    display: block;
-    // object-position: top center;
-    pointer-events: none;
-  }
+  background-image: url('/static/images/share@2x.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 /* ----- 进度（块1 内） ----- */
 
@@ -248,7 +189,7 @@ const rewardItems = [
   flex-wrap: wrap;
   min-height: 0;
   flex: 1;
-  background-color: pink;
+  // background-color: pink;
 }
 
 .app-home-reward-card {
@@ -342,7 +283,7 @@ const rewardItems = [
 
 /* ----- 右侧栏 ----- */
 .app-home-side {
-  width: 451px;
+  width: 470px;
   height: 100%;
   flex-shrink: 0;
   background-color: #ffd54f;

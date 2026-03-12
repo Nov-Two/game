@@ -82,7 +82,7 @@ onBeforeMount(async () => {
   display: flex;
   flex-direction: column;
   &.app-container--home {
-    padding: 0 68px 18px 38px;
+    padding: 0 68px 0px 20px;
   }
 }
 .app-header-title {
