@@ -202,17 +202,17 @@ onUnmounted(() => {
   border-radius: 3px;
   border: none;
   cursor: pointer;
-  background-color: rgba(255, 255, 255, 0.35);
+  background-color: rgb(18, 27, 36);
   transition: background 0.25s ease;
   padding: 0;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgb(220, 255, 0);
   }
 
   &.side-banner__dot--active {
-    background-color: #ffd54f;
-    box-shadow: 0 0 8px rgba(255, 213, 79, 0.6);
+    background-color: rgb(220, 255, 0);
+    box-shadow: 0 0 8px rgb(220, 255, 0);
   }
 }
 </style>

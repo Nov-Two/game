@@ -87,7 +87,7 @@ const currentValueFormatted = computed(() =>
 .app-home-main__motto {
   padding-left: 58px;
   // margin: 0 0 12px;
-  font-size: 18px;
+  font-size: 26px;
   font-weight: var(--font-medium);
   color: #fff;
   line-height: 1.3;
@@ -116,7 +116,7 @@ const currentValueFormatted = computed(() =>
 }
 
 .app-home-progress__label {
-  font-size: 22px;
+  font-size: 28px;
   font-weight: var(--font-extra-bold);
   color: #fff;
   padding-left: 58px;
@@ -124,7 +124,7 @@ const currentValueFormatted = computed(() =>
 }
 
 .app-home-progress__value {
-  font-size: 24px;
+  font-size: 38px;
   font-weight: var(--font-extra-bold);
   color: rgb(255, 235, 0);
   text-shadow: 0 0 12px rgba(255, 235, 0, 0.4);
@@ -164,12 +164,12 @@ const currentValueFormatted = computed(() =>
   .app-home-main__bottom-text {
     position: absolute;
     left: 16%;
-    top: -25px;
+    top: -50px;
     font-size: 26px;
     font-weight: var(--font-medium);
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     z-index: 2;
-    color: black;
+    color: rgb(46, 48, 54);
   }
 }
 

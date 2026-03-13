@@ -144,14 +144,14 @@ defineExpose({
 
 .gfr-dialog-close {
   position: absolute;
-  top: 8px;
-  left: -77px;
+  // top: 8px;
+  left: -36px;
   width: 47px;
   height: 47px;
   background-color: transparent;
   img {
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
   }
   // border-radius: var(--radius);
   // background: var(--light);

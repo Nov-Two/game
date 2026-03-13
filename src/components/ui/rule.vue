@@ -46,7 +46,7 @@
         :force-update="visible"
         @scroll-end="onScrollEnd"
       >
-        <GfrContent :context="content || ''" class="gfr-rule-content" />
+        <!-- <GfrContent :context="content || ''" class="gfr-rule-content" /> -->
       </GfrScrollArea>
     </GfrContainer>
   </GfrDialog>
@@ -120,14 +120,9 @@ watch(
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 20px 24px 30px;
-  background-image: url('/static/images/rule-bg@1x.png');
-  // background-image: image-set(
-  //   url('/static/images/rule-bg@1x.png') 1x,
-  //   url('/static/images/rule-bg@2x.png') 2x,
-  //   url('/static/images/rule-bg@3x.png') 3x
-  // );
-  background-size: cover;
+  // padding: 20px 24px 30px;
+  background-image: url('/static/images/dialog-rule@2x.png');
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
 }

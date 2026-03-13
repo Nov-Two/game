@@ -45,7 +45,7 @@
         <div class="award-card__qty"></div>
       </div>
       <div class="award-card__btn" :class="getRewardBtnClass(index)" :style="getRewardBtnStyle(index)">
-        <p>
+        <p class="award-card__btn-text" :style="{ color: getRewardBtnTextColor(index) }">
           {{ getRewardBtnText(index) }}
         </p>
       </div>
@@ -116,6 +116,14 @@ function getRewardBtnText(index: number) {
   if (status === 'unclaimed') return '未领取'
   if (status === 'claimable') return '正领取'
   return '已领取'
+}
+
+/** 按钮文字颜色：已领取 / 正领取 / 未领取 */
+function getRewardBtnTextColor(index: number): string {
+  const status = getRewardStatus(index)
+  if (status === 'claimed') return 'rgb(49, 90, 181)'
+  if (status === 'claimable') return 'rgb(46, 47, 50)'
+  return 'rgb(255, 255, 255)'
 }
 
 function getMarkerStyle(index: number, isCompleted: boolean) {
@@ -232,8 +240,12 @@ const formatNumber = (num) => {
   height: 14px;
   background-color: rgb(38, 33, 78);
   border-radius: 20px;
-  border: 1px solid rgb(37, 32, 75);
+  border-bottom: 0.5px solid rgb(0, 221, 255);
   /* box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6); */
+  box-shadow:
+    /* 1. 外部投影 (Drop Shadow) - 模拟“颜色减淡+白色”效果 */
+    0px 1px 0px rgba(255, 255, 255, 0.33),
+    /* 2. 内部阴影 (Inner Shadow) - 正片叠底黑色 */ inset 0px 3px 7px rgba(0, 0, 0, 0.2);
 }
 
 /* 填充条 */
@@ -301,7 +313,7 @@ const formatNumber = (num) => {
 }
 
 .label-value {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 700;
   color: rgb(220, 255, 0);
   font-weight: var(--font-extra-bold);
@@ -381,10 +393,11 @@ const formatNumber = (num) => {
   flex-shrink: 0;
   display: flex;
   justify-content: center;
-  line-height: 50px;
-  font-size: 18px;
   font-weight: var(--font-extra-bold);
-  color: #fff;
+  .award-card__btn-text {
+    line-height: 50px;
+    font-size: 26px;
+  }
 }
 
 .award-card__btn--claimed {
@@ -392,7 +405,6 @@ const formatNumber = (num) => {
 }
 
 .award-card--highlight .award-card__btn:not(.award-card__btn--claimed) {
-  // background-color: rgba(0, 200, 120, 0.6);
   color: rgb(255, 235, 0);
 }
 </style>
