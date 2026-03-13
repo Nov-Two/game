@@ -39,8 +39,10 @@
       :class="{ 'award-card--highlight': index === highlightClaimableIndex }"
     >
       <div class="award-card__thumb">
-        <div class="award-card__img" :style="{ backgroundImage: getRewardImgStyle(index) }"></div>
-        <!-- <div class="award-card__qty">x10</div> -->
+        <div class="award-card__img" :style="{ backgroundImage: getRewardImgStyle(index) }">
+          <img src="/static/images/prize@2x.png" alt="" style="width: 50%; height: 50%; object-fit: cover" />
+        </div>
+        <div class="award-card__qty"></div>
       </div>
       <div class="award-card__btn" :class="getRewardBtnClass(index)" :style="getRewardBtnStyle(index)">
         <p>
@@ -140,7 +142,7 @@ const props = defineProps({
     type: Array,
     default: () => [
       { value: 5000, isLingQu: true },
-      { value: 10000, isLingQu: true },
+      { value: 10000, isLingQu: false },
       { value: 15000, isLingQu: false },
       { value: 20000, isLingQu: false }
     ]
@@ -352,18 +354,21 @@ const formatNumber = (num) => {
   background-position: center;
   background-repeat: no-repeat;
   border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .award-card__qty {
   position: absolute;
-  right: 10px;
-  bottom: 10px;
-  padding: 2px 8px;
-  border-radius: 6px;
-  background: rgba(0, 0, 0, 0.55);
-  font-size: 14px;
-  font-weight: var(--font-extra-bold);
-  color: #fff;
+  right: 10%;
+  bottom: 18%;
+  background-image: url('/static/images/quantity@2x.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 46px;
+  height: 21px;
 }
 
 .award-card__btn {
@@ -372,11 +377,11 @@ const formatNumber = (num) => {
   left: 0;
   z-index: 3;
   width: 100%;
-  height: 68px;
+  height: 72px;
   flex-shrink: 0;
   display: flex;
   justify-content: center;
-  line-height: 48px;
+  line-height: 50px;
   font-size: 18px;
   font-weight: var(--font-extra-bold);
   color: #fff;

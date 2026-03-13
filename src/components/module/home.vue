@@ -23,12 +23,13 @@
       <!-- 块3：分享栏 -->
       <GfrContainer class="app-home-main__bottom">
         <img src="/static/images/share@2x.png" alt="" />
+        <p class="app-home-main__bottom-text">You have played 30 matches with friends</p>
       </GfrContainer>
     </GfrContainer>
 
-    <!-- 右侧推广栏 -->
+    <!-- 右侧推广栏：Banner 轮播 + 底部指示条 -->
     <GfrContainer class="app-home-side">
-      <!--  -->
+      <AppSideBanner />
     </GfrContainer>
   </GfrContainer>
 </template>
@@ -38,6 +39,7 @@ import { ref, computed } from 'vue'
 import { useStore } from '@/stores'
 import GfrContainer from '@/components/ui/container.vue'
 import AppProgress from '@/components/module/progress.vue'
+import AppSideBanner from '@/components/module/side-banner.vue'
 
 const store = useStore()
 const { fixTransify } = store
@@ -46,7 +48,7 @@ defineOptions({
   name: 'AppHomeModule'
 })
 
-const currentValue = ref(8000)
+const currentValue = ref(12000)
 const currentValueFormatted = computed(() =>
   currentValue.value >= 1e6 ? `${(currentValue.value / 1e6).toFixed(0)}M` : currentValue.value.toLocaleString('en-US')
 )
@@ -158,71 +160,30 @@ const currentValueFormatted = computed(() =>
     object-position: center;
     z-index: 1;
   }
+
+  .app-home-main__bottom-text {
+    position: absolute;
+    left: 16%;
+    top: -25px;
+    font-size: 26px;
+    font-weight: var(--font-medium);
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 2;
+    color: black;
+  }
 }
 
-/* ----- 右侧栏 ----- */
 .app-home-side {
-  width: 350px;
+  position: relative;
+  width: 329px;
   height: 100%;
   flex-shrink: 0;
-  background-color: #ffd54f;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-}
-
-.app-home-side__ribbon {
-  background: #ff9800;
-  color: #fff;
-  font-size: 12px;
-  font-weight: var(--font-bold);
-  padding: 4px 12px;
-  border-radius: 4px;
-  margin-bottom: 12px;
-}
-
-.app-home-side__title {
-  margin: 0 0 8px;
-  font-size: 24px;
-  font-weight: var(--font-extra-bold);
-  color: #fff;
-  text-transform: uppercase;
-  line-height: 1.2;
-  .app-home-side__title-accent {
-    color: #ffd54f;
-  }
-}
-
-.app-home-side__desc {
-  margin: 0 0 16px;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.4;
-}
-
-.app-home-side__art {
-  width: 100%;
-  height: 180px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  margin-bottom: 12px;
-}
-
-.app-home-side__dots {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-}
-
-.app-home-side__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.4);
-  &.app-home-side__dot--active {
-    background: #ffd54f;
-  }
+  align-items: stretch;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+  border: 4px solid rgb(161, 207, 250);
 }
 </style>
