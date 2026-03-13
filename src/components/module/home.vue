@@ -2,24 +2,21 @@
   <GfrContainer class="app-home-container">
     <!-- 主内容区：分 3 块 -->
     <GfrContainer class="app-home-main">
-      <!-- 块1：标题 + 进度文案 -->
+      <!-- 块1：标题 + 进度文案（与设计稿：Motto + Current Region Process 数值高亮） -->
       <GfrContainer class="app-home-main__top">
-        <div class="app-home-main__top-tip">
-          <GfrHeading class="app-home-top-text">
-            {{ fixTransify('Team up with friends and unlock rewards!') }}
-          </GfrHeading>
-        </div>
+        <p class="app-home-main__motto">
+          {{ fixTransify('Team up with friends and unlock rewards!') }}
+        </p>
         <div class="app-home-progress">
-          <GfrHeading class="app-home-top-text app-home-progress__text">
-            {{ fixTransify('Current Region Process:') }}
-          </GfrHeading>
+          <span class="app-home-progress__label">{{ fixTransify('Current Region Process:') }}</span>
+          <span class="app-home-progress__value">{{ currentValueFormatted }}</span>
         </div>
       </GfrContainer>
 
       <!-- 块2：里程碑 + 奖励卡片 -->
       <GfrContainer class="app-home-main__middle">
         <div class="app-home">
-          <AppProgress :currentValue="15000" />
+          <AppProgress :currentValue="currentValue" />
         </div>
       </GfrContainer>
 
@@ -37,16 +34,22 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue'
 import { useStore } from '@/stores'
 import GfrContainer from '@/components/ui/container.vue'
-import GfrHeading from '@/components/ui/heading.vue'
 import AppProgress from '@/components/module/progress.vue'
+
 const store = useStore()
 const { fixTransify } = store
 
 defineOptions({
   name: 'AppHomeModule'
 })
+
+const currentValue = ref(8000)
+const currentValueFormatted = computed(() =>
+  currentValue.value >= 1e6 ? `${(currentValue.value / 1e6).toFixed(0)}M` : currentValue.value.toLocaleString('en-US')
+)
 </script>
 
 <style lang="scss" scoped>
@@ -70,60 +73,68 @@ defineOptions({
   height: 100%;
 }
 
-/* ----- 块1：标题 + 进度文案 ----- */
 .app-home-main__top {
+  height: 104px;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   width: 100%;
-  // height: 100px;
-  .app-home-main__top-tip {
-    height: 22px;
-  }
-
-  .app-home-top-text {
-    padding-left: 58px;
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    margin: 0;
-    color: #fff;
-  }
-
-  .app-home-progress__text {
-    padding-top: 12px;
-    font-size: 24px;
-    font-weight: var(--font-extra-bold);
-    color: #fff;
-  }
-
-  .app-home-progress {
-    position: relative;
-    height: 80px;
-  }
-  .app-home-progress::before {
-    content: '';
-    position: absolute;
-    top: -28px;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('/static/images/current@1x.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-  }
+  // padding: 0 0 16px;
 }
 
-/* ----- 块2：里程碑 + 奖励卡片 ----- */
+.app-home-main__motto {
+  padding-left: 58px;
+  // margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: var(--font-medium);
+  color: #fff;
+  line-height: 1.3;
+}
+
+.app-home-progress {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+}
+
+.app-home-progress::before {
+  content: '';
+  position: absolute;
+  top: -24px;
+  left: 0;
+  width: 105%;
+  height: 160%;
+  background-image: url('/static/images/current@1x.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+.app-home-progress__label {
+  font-size: 22px;
+  font-weight: var(--font-extra-bold);
+  color: #fff;
+  padding-left: 58px;
+  z-index: 2;
+}
+
+.app-home-progress__value {
+  font-size: 24px;
+  font-weight: var(--font-extra-bold);
+  color: rgb(255, 235, 0);
+  text-shadow: 0 0 12px rgba(255, 235, 0, 0.4);
+  z-index: 2;
+}
+
+/* ----- 块2：里程碑 + 奖励卡片（与设计稿留白、间距一致） ----- */
 .app-home-main__middle {
-  margin-top: -20px;
-  // padding-left: 40px;
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
-
   .app-home {
     height: 100%;
     min-height: 260px;
@@ -138,11 +149,11 @@ defineOptions({
   width: 100%;
   flex-shrink: 0;
   img {
-    width: 100%;
-    height: 128px;
+    width: 103%;
+    height: 160px;
     position: absolute;
-    top: -128px;
-    left: 0;
+    top: -160px;
+    left: -18px;
     object-fit: cover;
     object-position: center;
     z-index: 1;
@@ -151,7 +162,7 @@ defineOptions({
 
 /* ----- 右侧栏 ----- */
 .app-home-side {
-  width: 470px;
+  width: 350px;
   height: 100%;
   flex-shrink: 0;
   background-color: #ffd54f;

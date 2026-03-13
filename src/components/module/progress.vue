@@ -40,10 +40,12 @@
     >
       <div class="award-card__thumb">
         <div class="award-card__img" :style="{ backgroundImage: getRewardImgStyle(index) }"></div>
-        <!-- <div class="award-card__qty">x10 数量角标占位</div> -->
+        <!-- <div class="award-card__qty">x10</div> -->
       </div>
       <div class="award-card__btn" :class="getRewardBtnClass(index)" :style="getRewardBtnStyle(index)">
-        {{ getRewardBtnText(index) }}
+        <p>
+          {{ getRewardBtnText(index) }}
+        </p>
       </div>
     </div>
   </div>
@@ -297,21 +299,22 @@ const formatNumber = (num) => {
 }
 
 .label-value {
-  font-size: 18px;
+  font-size: 28px;
   font-weight: 700;
   color: rgb(220, 255, 0);
   font-weight: var(--font-extra-bold);
   padding-top: 14px;
 }
 
-/* ----- 奖励区域：与进度条节点同宽等分，垂直对齐 ----- */
+/* ----- 奖励区域：与设计稿一致（卡片背景、高亮绿框、x10、按钮三态） ----- */
 .award-container {
   flex: 1;
   min-height: 0;
   width: 100%;
   display: grid;
-  gap: 16px;
+  gap: 20px;
   align-items: stretch;
+  // padding-top: 20px;
 }
 
 .award-card {
@@ -319,20 +322,23 @@ const formatNumber = (num) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12px;
+  // padding: 14px 0;
   border-radius: 16px;
+  position: relative;
+  // background: linear-gradient(180deg, rgba(38, 33, 78, 0.92) 0%, rgba(28, 24, 58, 0.96) 100%);
+  // border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .award-card--highlight {
-  // border-color: rgba(0, 255, 170, 0.4);
-  // box-shadow: 0 0 20px rgba(0, 255, 170, 0.15);
+  // border-color: rgb(0, 255, 170);
+  // box-shadow: 0 0 24px rgba(0, 255, 170, 0.35);
+  // background: linear-gradient(180deg, rgba(0, 200, 120, 0.2) 0%, rgba(38, 33, 78, 0.92) 100%);
 }
 
 .award-card__thumb {
-  height: 261px;
+  height: 320px;
   position: relative;
   width: 100%;
-  aspect-ratio: 1;
   border-radius: 12px;
   overflow: hidden;
   flex-shrink: 0;
@@ -341,6 +347,7 @@ const formatNumber = (num) => {
 .award-card__img {
   width: 100%;
   height: 100%;
+  background-color: rgba(255, 255, 255, 0.04);
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
@@ -349,23 +356,38 @@ const formatNumber = (num) => {
 
 .award-card__qty {
   position: absolute;
-  right: 8px;
-  bottom: 8px;
-  width: 32px;
-  height: 20px;
+  right: 10px;
+  bottom: 10px;
+  padding: 2px 8px;
   border-radius: 6px;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.55);
+  font-size: 14px;
+  font-weight: var(--font-extra-bold);
+  color: #fff;
 }
 
 .award-card__btn {
+  position: absolute;
+  bottom: 84px;
+  left: 0;
+  z-index: 3;
   width: 100%;
-  height: 48px;
+  height: 68px;
   flex-shrink: 0;
   display: flex;
-  align-items: center;
   justify-content: center;
-  font-size: 14px;
-  font-weight: 700;
+  line-height: 48px;
+  font-size: 18px;
+  font-weight: var(--font-extra-bold);
   color: #fff;
+}
+
+.award-card__btn--claimed {
+  background-image: none;
+}
+
+.award-card--highlight .award-card__btn:not(.award-card__btn--claimed) {
+  // background-color: rgba(0, 200, 120, 0.6);
+  color: rgb(255, 235, 0);
 }
 </style>
