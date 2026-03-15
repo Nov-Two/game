@@ -21,7 +21,7 @@
       </GfrContainer>
 
       <!-- 块3：分享栏 -->
-      <GfrContainer class="app-home-main__bottom">
+      <GfrContainer class="app-home-main__bottom" role="button" tabindex="0" @click="handleOpenShare">
         <img src="/static/images/share@2x.png" alt="" />
         <p class="app-home-main__bottom-text">You have played 30 matches with friends</p>
       </GfrContainer>
@@ -43,6 +43,9 @@ import AppSideBanner from '@/components/module/side-banner.vue'
 
 const store = useStore()
 const { fixTransify } = store
+const emit = defineEmits<{
+  'open-share': []
+}>()
 
 defineOptions({
   name: 'AppHomeModule'
@@ -52,6 +55,10 @@ const currentValue = ref(12000)
 const currentValueFormatted = computed(() =>
   currentValue.value >= 1e6 ? `${(currentValue.value / 1e6).toFixed(0)}M` : currentValue.value.toLocaleString('en-US')
 )
+
+function handleOpenShare() {
+  emit('open-share')
+}
 </script>
 
 <style lang="scss" scoped>
@@ -150,6 +157,7 @@ const currentValueFormatted = computed(() =>
   position: relative;
   width: 100%;
   flex-shrink: 0;
+  cursor: pointer;
   img {
     width: 103%;
     height: 160px;

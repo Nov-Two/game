@@ -9,7 +9,8 @@
             </GfrHeading>
           </transition>
         </AppHeader>
-        <AppHomeModule v-if="currentModule === Modules.Home" />
+        <AppHomeModule v-if="currentModule === Modules.Home" @open-share="handleOpenShare" />
+        <AppShareModule v-else-if="currentModule === Modules.Share" @close="handleCloseShare" />
       </GfrContainer>
     </GfrModule>
     <AppThPolicyDialog />
@@ -21,6 +22,7 @@ import GfrFlexible from '@/components/ui/flexible.vue'
 import GfrModule from '@/components/ui/module.vue'
 import GfrContainer from '@/components/ui/container.vue'
 import AppHomeModule from '@/components/module/home.vue'
+import AppShareModule from '@/components/module/share.vue'
 // import AppLotteryModule from '@/components/module/lottery.vue'
 import AppHeader from '@/components/app/header.vue'
 import AppEuPolicyDialog from '@/components/app/eu-policy-dialog.vue'
@@ -42,17 +44,25 @@ defineOptions({
 
 enum Modules {
   Home = 1,
-  Lottery = 2
+  Share = 2,
 }
 
 const currentModule = ref<Modules>(Modules.Home)
 
 const headingTexts: Record<Modules, string> = {
   [Modules.Home]: '',
-  [Modules.Lottery]: ''
+  [Modules.Share]: '',
 }
 
 const currentHeading = computed(() => fixTransify(headingTexts[currentModule.value]))
+
+function handleOpenShare() {
+  currentModule.value = Modules.Share
+}
+
+function handleCloseShare() {
+  currentModule.value = Modules.Home
+}
 
 onBeforeMount(async () => {
   await initConfig()
@@ -73,6 +83,17 @@ onBeforeMount(async () => {
   //   url('/static/images/share-have@2x.jpg') 2x,
   //   url('/static/images/share-have@3x.jpg') 3x
   // );
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.app-share-module {
+  background-image: url('/static/images/bg@1x.jpg');
+  background-image: image-set(
+    url('/static/images/bg@1x.jpg') 1x,
+    url('/static/images/bg@2x.jpg') 2x,
+    url('/static/images/bg@3x.jpg') 3x
+  );
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

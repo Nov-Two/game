@@ -201,12 +201,6 @@ const progressPercentage = computed(() => {
   return getMarkerPosition(n - 1)
 })
 
-// 计算当前所处的阶段（最后一个达到的里程碑）
-const currentStage = computed(() => {
-  // 倒序查找第一个小于等于当前值的里程碑
-  const reached = [...props.milestones].reverse().find((m) => props.currentValue >= m.value)
-  return reached || null
-})
 
 /** 节点位置与下方奖励卡片垂直对齐：每格中心 (index + 0.5) / n * 100% */
 const getMarkerPosition = (index: number) => {
@@ -384,10 +378,10 @@ const formatNumber = (num) => {
 }
 
 .award-card__btn {
-  position: absolute;
-  bottom: 84px;
-  left: 0;
-  z-index: 3;
+  // position: absolute;
+  // bottom: 84px;
+  // left: 0;
+  // z-index: 3;
   width: 100%;
   height: 72px;
   flex-shrink: 0;

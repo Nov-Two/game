@@ -29,7 +29,13 @@ defineOptions({
   name: 'SideBanner'
 })
 
-const slides = ref([
+type Slide = {
+  bgImage: string
+  title: string
+  subtitle: string
+}
+
+const slides = ref<Slide[]>([
   {
     bgImage: `linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #0f2027 100%)`,
     title: 'S44',
@@ -50,9 +56,11 @@ const slides = ref([
 /** 无限循环用：首尾各克隆一页 [last, ...original, first] */
 const loopSlides = computed(() => {
   const list = slides.value
+  if (list.length === 0) return []
   if (list.length <= 1) return list
   const last = list[list.length - 1]
   const first = list[0]
+  if (!last || !first) return list
   return [last, ...list, first]
 })
 
@@ -64,7 +72,6 @@ let isJumping = false
 function goTo(logicalIndex: number) {
   const el = scrollRef.value
   if (!el) return
-  const n = slides.value.length
   const w = el.offsetWidth
   // loopSlides 中真实第一页在 DOM 下标 1，真实最后一页在 DOM 下标 n
   const domIndex = logicalIndex + 1
