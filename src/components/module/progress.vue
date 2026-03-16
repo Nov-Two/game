@@ -44,9 +44,20 @@
         </div>
         <div class="award-card__qty"></div>
       </div>
-      <div class="award-card__btn" :class="getRewardBtnClass(index)" :style="getRewardBtnStyle(index)">
-        <p class="award-card__btn-text" :style="{ color: getRewardBtnTextColor(index) }">
-          {{ getRewardBtnText(index) }}
+      <div
+        v-if="isAwardButtonVisible(index)"
+        class="award-card__btn"
+        :class="getRewardBtnClass(index)"
+        :style="getRewardBtnStyle(index)"
+        role="button"
+        tabindex="0"
+        @click="handleClaimClick(index)"
+      >
+        <p
+          class="award-card__btn-text"
+          :style="{ color: getRewardBtnTextColorResolved(index) }"
+        >
+          {{ getRewardBtnTextResolved(index) }}
         </p>
       </div>
     </div>
@@ -110,7 +121,7 @@ function getRewardBtnClass(index: number) {
   return status === 'claimed' ? 'award-card__btn--claimed' : ''
 }
 
-/** 按钮文案：未领取 / 正领取(可领取) / 已领取 */
+/** 按钮文案（内部默认）：未领取 / 正领取(可领取) / 已领取 */
 function getRewardBtnText(index: number) {
   const status = getRewardStatus(index)
   if (status === 'unclaimed') return '未领取'
@@ -118,12 +129,41 @@ function getRewardBtnText(index: number) {
   return '已领取'
 }
 
-/** 按钮文字颜色：已领取 / 正领取 / 未领取 */
+/** 按钮文字颜色（内部默认）：已领取 / 正领取 / 未领取 */
 function getRewardBtnTextColor(index: number): string {
   const status = getRewardStatus(index)
   if (status === 'claimed') return 'rgb(49, 90, 181)'
   if (status === 'claimable') return 'rgb(46, 47, 50)'
   return 'rgb(255, 255, 255)'
+}
+
+/** 外部传入的按钮展示配置（按 index 对应），未传则用内部逻辑 */
+export interface RewardButtonOverride {
+  text?: string
+  color?: string
+  visible?: boolean
+}
+
+/** 是否显示该索引的奖励按钮：先看 showAwardButtons，再看 overrides[index].visible */
+function isAwardButtonVisible(index: number): boolean {
+  if (!props.showAwardButtons) return false
+  const override = props.rewardButtonOverrides?.[index] as RewardButtonOverride | undefined
+  if (override && typeof override.visible === 'boolean') return override.visible
+  return true
+}
+
+/** 按钮文案：优先使用外部 override.text，否则用内部默认 */
+function getRewardBtnTextResolved(index: number): string {
+  const override = props.rewardButtonOverrides?.[index] as RewardButtonOverride | undefined
+  if (override?.text != null && String(override.text) !== '') return String(override.text)
+  return getRewardBtnText(index)
+}
+
+/** 按钮文字颜色：优先使用外部 override.color，否则用内部默认 */
+function getRewardBtnTextColorResolved(index: number): string {
+  const override = props.rewardButtonOverrides?.[index] as RewardButtonOverride | undefined
+  if (override?.color != null && String(override.color) !== '') return String(override.color)
+  return getRewardBtnTextColor(index)
 }
 
 function getMarkerStyle(index: number, isCompleted: boolean) {
@@ -154,8 +194,28 @@ const props = defineProps({
       { value: 15000, isLingQu: false },
       { value: 20000, isLingQu: false }
     ]
+  },
+  /** 是否展示奖励按钮区域，默认 true；设为 false 时所有卡片不显示按钮 */
+  showAwardButtons: {
+    type: Boolean,
+    default: true
+  },
+  /** 按索引覆盖按钮展示：text 文案、color 颜色、visible 是否显示；不传或某索引未配置则用内部逻辑 */
+  rewardButtonOverrides: {
+    type: Array as () => RewardButtonOverride[],
+    default: undefined
   }
 })
+
+const emit = defineEmits<{
+  /** 点击「正领取」按钮时触发，参数为奖励索引；若为最后一次领取可由父组件展示恭喜弹窗 */
+  claim: [index: number]
+}>()
+
+function handleClaimClick(index: number) {
+  if (getRewardStatus(index) !== 'claimable') return
+  emit('claim', index)
+}
 
 // 计算最大值 (取配置中的最后一个值，或者手动指定最大值逻辑)
 const maxValue = computed(() => {

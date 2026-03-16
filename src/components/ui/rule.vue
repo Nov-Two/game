@@ -46,7 +46,7 @@
         :force-update="visible"
         @scroll-end="onScrollEnd"
       >
-        <!-- <GfrContent :context="content || ''" class="gfr-rule-content" /> -->
+        <GfrContent :context="content || ''" class="gfr-rule-content" />
       </GfrScrollArea>
     </GfrContainer>
   </GfrDialog>
@@ -114,25 +114,29 @@ watch(
 
 <style scoped lang="scss">
 .gfr-container.gfr-rule-wrapper {
+  position: relative;
   width: 100%;
   height: 100%;
-  min-height: 0; /* flex 子项可正确收缩 */
+  min-height: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  // padding: 20px 24px 30px;
   background-image: url('/static/images/dialog-rule@2x.png');
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
+  padding-left: 100px;
+  padding-right: 98px;
+  padding-bottom: 50px;
 }
 .gfr-rule-header {
-  font-size: 42px;
+  font-size: 40px;
   font-weight: var(--font-extra-bold);
-  text-transform: uppercase;
+  text-transform: uppercase; // 所有文字都大写
   color: var(--dark);
-  font-style: italic;
+  // font-style: italic;
   text-align: center;
+  padding-top: 40px;
 }
 
 .gfr-rule-container {

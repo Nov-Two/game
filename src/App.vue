@@ -1,7 +1,7 @@
 <template>
   <GfrFlexible>
-    <GfrModule center :class="`app-${Modules[currentModule].toLowerCase()}-module`">
-      <GfrContainer flexible class="app-container" :class="{ 'app-container--home': currentModule === Modules.Home }">
+    <GfrModule center :class="moduleClass">
+      <GfrContainer flexible class="app-container" :class="{ 'app-container--home': !isSharePage }">
         <AppHeader>
           <transition name="gfr-heading-fade" mode="out-in">
             <GfrHeading v-if="currentHeading" :key="currentHeading" class="app-header-title">
@@ -9,8 +9,8 @@
             </GfrHeading>
           </transition>
         </AppHeader>
-        <AppHomeModule v-if="currentModule === Modules.Home" @open-share="handleOpenShare" />
-        <AppShareModule v-else-if="currentModule === Modules.Share" @close="handleCloseShare" />
+        <AppHomeModule v-if="!isSharePage" @open-share="handleOpenShare" />
+        <AppShareModule v-else @close="handleCloseShare" />
       </GfrContainer>
     </GfrModule>
     <AppThPolicyDialog />
@@ -28,11 +28,13 @@ import AppHeader from '@/components/app/header.vue'
 import AppEuPolicyDialog from '@/components/app/eu-policy-dialog.vue'
 import AppThPolicyDialog from '@/components/app/th-policy-dialog.vue'
 import GfrHeading from '@/components/ui/heading.vue'
-
-import { ref, computed, onBeforeMount } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { computed, onBeforeMount } from 'vue'
 import { useStore } from '@/stores'
 // import { storeToRefs } from 'pinia'
 const store = useStore()
+const route = useRoute()
+const router = useRouter()
 
 const { initConfig, fixTransify } = store
 // const { state } = storeToRefs(store)
@@ -42,26 +44,23 @@ defineOptions({
   name: 'App'
 })
 
-enum Modules {
-  Home = 1,
-  Share = 2,
+/** 分享页作为独立路由 /share，不再用弹框/模块切换 */
+const isSharePage = computed(() => route.path === '/share')
+
+const moduleClass = computed(() => (isSharePage.value ? 'app-share-module' : 'app-home-module'))
+
+const headingTexts: Record<string, string> = {
+  '/': '',
+  '/share': ''
 }
-
-const currentModule = ref<Modules>(Modules.Home)
-
-const headingTexts: Record<Modules, string> = {
-  [Modules.Home]: '',
-  [Modules.Share]: '',
-}
-
-const currentHeading = computed(() => fixTransify(headingTexts[currentModule.value]))
+const currentHeading = computed(() => fixTransify(headingTexts[route.path] ?? ''))
 
 function handleOpenShare() {
-  currentModule.value = Modules.Share
+  router.push('/share')
 }
 
 function handleCloseShare() {
-  currentModule.value = Modules.Home
+  router.back()
 }
 
 onBeforeMount(async () => {
@@ -77,23 +76,17 @@ onBeforeMount(async () => {
     url('/static/images/bg@2x.jpg') 2x,
     url('/static/images/bg@3x.jpg') 3x
   );
-  // background-image: url('/static/images/share-have@1x.jpg');
-  // background-image: image-set(
-  //   url('/static/images/share-have@1x.jpg') 1x,
-  //   url('/static/images/share-have@2x.jpg') 2x,
-  //   url('/static/images/share-have@3x.jpg') 3x
-  // );
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 .app-share-module {
-  background-image: url('/static/images/bg@1x.jpg');
-  background-image: image-set(
-    url('/static/images/bg@1x.jpg') 1x,
-    url('/static/images/bg@2x.jpg') 2x,
-    url('/static/images/bg@3x.jpg') 3x
-  );
+  background-image: url('/static/images/share-have@2x.jpg');
+  // background-image: image-set(
+  //   url('/static/images/bg@1x.jpg') 1x,
+  //   url('/static/images/bg@2x.jpg') 2x,
+  //   url('/static/images/bg@3x.jpg') 3x
+  // );
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
