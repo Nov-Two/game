@@ -5,6 +5,7 @@
         class="app-header__sound-effect"
         :storage-key="storageKey"
         :volume="volume"
+        :default-enabled="false"
         :sounds="sounds"
         @after-init="handleAfterInit"
         @status-change="handleSoundStatusChange"
@@ -81,7 +82,7 @@ import { useGA } from '@/composables/useGA'
 import { formatCountdown } from '@/lib/utils'
 const { addGA } = useGA()
 const { getGameVolume } = useGame()
-const { createSounds, playSounds } = useSound()
+const { createSounds, playSounds, pauseSounds } = useSound()
 const store = useStore()
 const { fixTransify } = store
 const { state } = storeToRefs(store)
@@ -90,9 +91,11 @@ defineOptions({
 })
 const storageKey = `${import.meta.env.VITE_APP_PROJECT_NAME}_sounds_status`
 const ruleContent = computed(() => state.value.eventConfig.rule)
-const handleAfterInit = (sounds: any) => {
-  createSounds(sounds)
-  playSounds('bgm')
+const handleAfterInit = (howlMap: Record<string, import('howler').Howl>) => {
+  createSounds(howlMap)
+  const stored = typeof localStorage !== 'undefined' ? localStorage.getItem(storageKey) : null
+  musicStatus.value = stored === 'true'
+  if (musicStatus.value) playSounds('bgm')
   Toast.setDefaultOptions({
     onOpen: () => {
       playSounds('toast')
@@ -107,8 +110,12 @@ onBeforeMount(() => {
 })
 const musicStatus = ref<boolean>(false)
 const handleSoundStatusChange = (status: boolean) => {
-  playSounds(status ? 'bgm' : 'bgm_off')
   musicStatus.value = status
+  if (status) {
+    playSounds('bgm')
+  } else {
+    pauseSounds('bgm')
+  }
   addGA(`sound_status_${status ? 'on' : 'off'}`, true)
 }
 const handleRuleOpen = (type: 'open' | 'close') => {

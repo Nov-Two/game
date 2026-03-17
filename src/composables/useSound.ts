@@ -36,10 +36,17 @@ const sounds: Ref<Sounds> = ref({})
  */
 export function useSound() {
   /**
-   * 创建音效实例
+   * 创建音效实例（会先卸载已有实例，避免重复创建导致多个 BGM 同时播放）
    * @param soundsMap - 音效映射对象，key 为音效名称，value 为 Howl 实例
    */
   function createSounds(soundsMap: Sounds) {
+    if (Object.keys(sounds.value || {}).length > 0) {
+      Object.keys(sounds.value).forEach((key) => {
+        const s = sounds.value[key]
+        if (s) s.unload()
+      })
+      sounds.value = {}
+    }
     sounds.value = soundsMap
   }
 

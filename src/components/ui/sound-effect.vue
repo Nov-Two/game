@@ -9,6 +9,8 @@ interface SoundEffectProps {
   persistent?: boolean
   rotate?: boolean
   volume?: number
+  /** 无存储时的默认开关状态，默认 false 表示初始静音，需用户手动开启 */
+  defaultEnabled?: boolean
   storageKey?: string
   sounds?: {
     tag: string
@@ -25,6 +27,7 @@ const props = withDefaults(defineProps<SoundEffectProps>(), {
   persistent: true,
   rotate: true,
   volume: 0.5,
+  defaultEnabled: false,
   storageKey: 'sound-effect',
   sounds: () => []
 })
@@ -50,20 +53,20 @@ function createHowlerSounds() {
   }
   return HowlSounds
 }
-const setSoundStatus = (defaultStatus: boolean): boolean => {
+const setSoundStatus = (): boolean => {
   const storageStatus = localStorage.getItem(props.storageKey)
   const soundStatus = storageStatus ? (storageStatus === 'true' ? true : false) : undefined
-  if (typeof soundStatus === 'undefined' || soundStatus) {
+  const defaultStatus = props.defaultEnabled ?? (props.volume !== 0)
+  if (typeof soundStatus === 'undefined') {
     return defaultStatus
-  } else {
-    return props.persistent ? (soundStatus as boolean) : defaultStatus
   }
+  return props.persistent ? soundStatus : defaultStatus
 }
 const initSound = () => {
   Howler.unload()
   howlerSounds.value = createHowlerSounds()
   Howler.volume(props.volume)
-  status.value = setSoundStatus(props.volume != 0)
+  status.value = setSoundStatus()
   Howler.mute(!status.value)
   emit('after-init', howlerSounds.value)
 }
@@ -74,7 +77,7 @@ watch(
   () => props.volume,
   (newVal: number) => {
     Howler.volume(newVal)
-    status.value = setSoundStatus(newVal != 0)
+    status.value = setSoundStatus()
     Howler.mute(!status.value)
   },
   { immediate: false }
