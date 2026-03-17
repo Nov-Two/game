@@ -6,18 +6,8 @@
     :close-on-overlay="false"
     lock-scroll
     :disable-trigger="disableTrigger"
-    @open="
-      () => {
-        resetScrollArea = true
-        emit('open')
-      }
-    "
-    @closed="
-      () => {
-        resetScrollArea = false
-        emit('closed')
-      }
-    "
+    @open="handleRuleOpen"
+    @closed="handleRuleClosed"
     @close="emit('close')"
     @opened="emit('opened')"
   >
@@ -29,6 +19,7 @@
         {{ title }}
       </div>
       <GfrScrollArea
+        ref="scrollAreaRef"
         class="gfr-rule-container"
         :reset="resetScrollArea"
         :dir="dir"
@@ -44,23 +35,39 @@
         :initial-x="0"
         :initial-y="0"
         :force-update="visible"
-        @scroll-end="onScrollEnd"
+        @scroll-end="handleScrollEnd"
       >
         <GfrContent :context="content || ''" class="gfr-rule-content" />
       </GfrScrollArea>
+      <div
+        v-show="!isScrollAtBottom"
+        class="gfr-rule-scroll-bottom"
+        role="button"
+        tabindex="0"
+        aria-label="Scroll to bottom"
+        @click="scrollToBottom"
+      />
     </GfrContainer>
   </GfrDialog>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import GfrDialog from '@/components/ui/dialog.vue'
 import GfrContainer from '@/components/ui/container.vue'
 import GfrScrollArea from '@/components/ui/scroll-area.vue'
 import GfrContent from '@/components/ui/content.vue'
+
 defineOptions({
   name: 'GfrRule'
 })
+
+const scrollAreaRef = ref<InstanceType<typeof GfrScrollArea> | null>(null)
+const isScrollAtBottom = ref(false)
+
+function scrollToBottom() {
+  scrollAreaRef.value?.scrollToBottom?.()
+}
 
 interface RuleProps {
   type?: 'fade' | 'fall' | 'bounce' | 'zoom'
@@ -78,14 +85,12 @@ interface RuleProps {
   }
 }
 
-const props = withDefaults(defineProps<RuleProps>(), {
+withDefaults(defineProps<RuleProps>(), {
   type: 'bounce',
   dir: 'ltr',
   scrollType: 'auto',
   orientation: 'vertical'
 })
-
-console.log(props.title)
 
 const emit = defineEmits<{
   close: []
@@ -97,19 +102,22 @@ const emit = defineEmits<{
 
 const visible = defineModel<boolean>('visible', { default: false })
 const resetScrollArea = ref(false)
-const onScrollEnd = (isEnd: boolean) => {
-  emit('scrollEnd', isEnd)
+
+function handleRuleOpen() {
+  resetScrollArea.value = true
+  isScrollAtBottom.value = false
+  emit('open')
 }
 
-watch(
-  () => visible.value,
-  (newVal) => {
-    if (newVal) {
-      console.log(props.title)
-    }
-  },
-  { immediate: true, deep: true }
-)
+function handleRuleClosed() {
+  resetScrollArea.value = false
+  emit('closed')
+}
+
+function handleScrollEnd(isEnd: boolean) {
+  isScrollAtBottom.value = isEnd
+  emit('scrollEnd', isEnd)
+}
 </script>
 
 <style scoped lang="scss">
@@ -132,14 +140,30 @@ watch(
 .gfr-rule-header {
   font-size: 40px;
   font-weight: var(--font-extra-bold);
-  text-transform: uppercase; // 所有文字都大写
+  text-transform: uppercase;
   color: var(--dark);
-  // font-style: italic;
   text-align: center;
   padding-top: 40px;
 }
 
 .gfr-rule-container {
   margin: 20px 0;
+}
+
+.gfr-rule-scroll-bottom {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('/static/images/arrow@2x.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 </style>

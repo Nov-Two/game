@@ -206,6 +206,17 @@ watch(
     setScrollArea(initialX, initialY)
   }
 )
+
+function scrollToBottom() {
+  const el = viewRef.value
+  if (!el) return
+  el.scrollTo({ top: el.scrollHeight - el.clientHeight, behavior: 'smooth' })
+}
+
+defineExpose({
+  scrollToBottom,
+  viewRef
+})
 </script>
 
 <style lang="scss" scoped>
