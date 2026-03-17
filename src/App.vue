@@ -23,7 +23,6 @@ import GfrModule from '@/components/ui/module.vue'
 import GfrContainer from '@/components/ui/container.vue'
 import AppHomeModule from '@/components/module/home.vue'
 import AppShareModule from '@/components/module/share.vue'
-// import AppLotteryModule from '@/components/module/lottery.vue'
 import AppHeader from '@/components/app/header.vue'
 import AppEuPolicyDialog from '@/components/app/eu-policy-dialog.vue'
 import AppThPolicyDialog from '@/components/app/th-policy-dialog.vue'
@@ -47,7 +46,13 @@ defineOptions({
 /** 分享页作为独立路由 /share，不再用弹框/模块切换 */
 const isSharePage = computed(() => route.path === '/share')
 
-const moduleClass = computed(() => (isSharePage.value ? 'app-share-module' : 'app-home-module'))
+const shareModuleClass = computed(() => {
+  if (!isSharePage.value) return ''
+  return store.sharePageUseHaveBackground
+    ? 'app-share-module app-share-module--have'
+    : 'app-share-module app-share-module--no'
+})
+const moduleClass = computed(() => (isSharePage.value ? shareModuleClass.value : 'app-home-module'))
 
 const headingTexts: Record<string, string> = {
   '/': '',
@@ -70,26 +75,21 @@ onBeforeMount(async () => {
 
 <style lang="scss" scoped>
 .app-home-module {
-  background-image: url('/static/images/bg@1x.jpg');
-  background-image: image-set(
-    url('/static/images/bg@1x.jpg') 1x,
-    url('/static/images/bg@2x.jpg') 2x,
-    url('/static/images/bg@3x.jpg') 3x
-  );
+  background-image: url('/static/images/bg@2x.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 .app-share-module {
-  background-image: url('/static/images/share-have@2x.jpg');
-  // background-image: image-set(
-  //   url('/static/images/bg@1x.jpg') 1x,
-  //   url('/static/images/bg@2x.jpg') 2x,
-  //   url('/static/images/bg@3x.jpg') 3x
-  // );
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+.app-share-module--have {
+  background-image: url('/static/images/share-have@2x.png');
+}
+.app-share-module--no {
+  background-image: url('/static/images/share-no@2x.png');
 }
 .app-container {
   padding: 0 20px 40px 30px;

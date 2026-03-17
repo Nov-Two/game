@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { type Transify } from './types'
 import { defaultTransify } from './default'
 import session from '@/lib/session'
-import { reactive } from 'vue'
+import { computed, reactive } from 'vue'
 import Toast from '@/components/ui/toast'
 import { userInfo } from '@/lib/apis'
 import { loadStyle, urlQuery } from '@/lib/utils'
@@ -28,8 +28,32 @@ export const useStore = defineStore('common', () => {
       adText: '',
       storageChecked: true,
       adChecked: true
-    }
+    },
+    /** 分享页当前用户排名，由 share 模块拉取并写入；所有排名相关展示逻辑以 1000 名为阈值统一在 store 计算 */
+    sharePageRank: null as number | null
   })
+
+  /** 排名逻辑统一阈值：前 1000 名显示勋章/排名/use-have 背景，否则不显示勋章、使用 share-no 背景与 tip 间距 */
+  const RANK_TOP_THRESHOLD = 1000
+
+  const sharePageRankText = computed(() => {
+    const r = state.sharePageRank
+    return r == null ? '--' : `${r}th`
+  })
+  const sharePageShowRankAndBadge = computed(
+    () => state.sharePageRank != null && state.sharePageRank <= RANK_TOP_THRESHOLD
+  )
+  const sharePageRankAfterThreshold = computed(
+    () => state.sharePageRank == null || state.sharePageRank > RANK_TOP_THRESHOLD
+  )
+  const sharePageUseHaveBackground = computed(
+    () => state.sharePageRank != null && state.sharePageRank <= RANK_TOP_THRESHOLD
+  )
+
+  function setSharePageRank(value: number | null) {
+    state.sharePageRank = value
+  }
+
   /**
    * 根据传入的 key 获取对应的翻译文本
    * 如果 state.transify 中不存在该 key，则直接返回 key 本身作为兜底
@@ -133,6 +157,12 @@ export const useStore = defineStore('common', () => {
 
   return {
     state,
+    RANK_TOP_THRESHOLD,
+    sharePageRankText,
+    sharePageShowRankAndBadge,
+    sharePageRankAfterThreshold,
+    sharePageUseHaveBackground,
+    setSharePageRank,
     fixTransify,
     formatTransify,
     initConfig

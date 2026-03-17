@@ -23,13 +23,18 @@
       <!-- 块3：分享栏 -->
       <GfrContainer class="app-home-main__bottom" role="button" tabindex="0">
         <img src="/static/images/share@2x.png" alt="" @click="handleOpenShare" />
-        <p class="app-home-main__bottom-text">You have played 30 matches with friends</p>
+        <p class="app-home-main__bottom-text">
+          <span class="app-home-main__bottom-text__muted">{{ fixTransify('SHARE_HAVE_PLAYED') }}</span>
+          <span class="app-home-main__bottom-text__num">{{ matchesPlayed }}</span>
+          <span class="app-home-main__bottom-text__highlight">{{ fixTransify('SHARE_MATCHES') }}</span>
+          <span class="app-home-main__bottom-text__muted">{{ fixTransify('SHARE_WITH_FRIENDS') }}</span>
+        </p>
       </GfrContainer>
     </GfrContainer>
 
     <!-- 右侧推广栏：Banner 轮播 + 底部指示条 -->
     <GfrContainer class="app-home-side">
-      <AppSideBanner />
+      <AppSideBanner :slides="sideBannerSlides" :autoplay-interval="4000" />
     </GfrContainer>
 
     <AppClaimDialog
@@ -57,9 +62,10 @@ import { ref, computed } from 'vue'
 import { useStore } from '@/stores'
 import GfrContainer from '@/components/ui/container.vue'
 import GfrProgress from '@/components/ui/progress.vue'
-import AppSideBanner from '@/components/module/side-banner.vue'
+import AppSideBanner from '@/components/ui/side-banner.vue'
 import AppClaimDialog from '@/components/app/claim-dialog.vue'
 import AppCongratsDialog from '@/components/app/congrats-dialog.vue'
+import type { MilestoneItem } from '@/composables/useMilestoneProgress'
 
 const store = useStore()
 const { fixTransify } = store
@@ -71,15 +77,15 @@ defineOptions({
   name: 'AppHomeModule'
 })
 
-const currentValue = ref(10000)
-const milestones = ref<Array<{ value: number; isLingQu?: boolean; quantity?: number }>>([
-  { value: 2000, isLingQu: true },
-  { value: 3000, isLingQu: true },
-  { value: 6000, isLingQu: false, quantity: 10 },
-  { value: 10_000, isLingQu: false, quantity: 10 }
+const currentValue = ref(9000)
+const milestones = ref<Array<MilestoneItem & { name: string }>>([
+  { value: 2000, isLingQu: true, quantity: 10, imageUrl: '/static/images/prize@2x.png', name: 'Reward 1' },
+  { value: 3000, isLingQu: false, quantity: 10, imageUrl: '/static/images/prize2@2x.png', name: 'Reward 2' },
+  { value: 6000, isLingQu: false, quantity: 10, imageUrl: '/static/images/prize3@2x.png', name: 'Reward 3' },
+  { value: 10_000, isLingQu: false, quantity: 10, imageUrl: '/static/images/prize2@2x.png', name: 'Reward 4' }
 ])
 
-const showClaimDialog = ref(true)
+const showClaimDialog = ref(false)
 const showCongratsDialog = ref(false)
 
 /** 普通领取弹框展示的奖励（非最后一档时使用） */
@@ -89,16 +95,22 @@ const claimDialogReward = ref<{ name: string; img: string; qty: number }>({
   qty: 10
 })
 
-/** 各档位对应奖励展示（非最后一档）；与 milestones 索引一致，最后一档走大奖弹框 */
-const rewardDisplayList = [
-  { name: 'Reward 1', img: '/static/images/prize@2x.png', qty: 10 },
-  { name: 'Reward 2', img: '/static/images/prize@2x.png', qty: 10 },
-  { name: 'PW_PP19_Rainforest', img: '/static/images/prize@2x.png', qty: 10 }
-]
-
 const currentValueFormatted = computed(() =>
   currentValue.value >= 1e6 ? `${(currentValue.value / 1e6).toFixed(0)}M` : currentValue.value.toLocaleString('en-US')
 )
+
+/** 对战场次：来自用户信息接口 player.matches_played */
+const matchesPlayed = computed(() => {
+  const p = store.state.player as Record<string, unknown> | undefined
+  const m = p?.['matches_played']
+  return typeof m === 'number' && Number.isFinite(m) ? m : 0
+})
+
+/** 右侧轮播图数据，由父组件控制；图片使用 /images/banner-img@2x.png */
+const sideBannerSlides = ref<Array<{ bgImage: string; title?: string; subtitle?: string }>>([
+  { bgImage: 'url(/static/images/banner-img@2x.png)' },
+  { bgImage: 'url(/static/images/banner-img@2x.png)' }
+])
 
 const congratsSubtitle = computed(() => {
   const name = 'nickname'
@@ -106,12 +118,11 @@ const congratsSubtitle = computed(() => {
   return `${name} ${t}`
 })
 
-const centerReward = computed(() => ({
-  name: 'PW_PP19_Rainforest',
-  img: '/static/images/prize@2x.png',
-  qty: 10,
-  bgStyle: {}
-}))
+const centerReward = ref<{ name: string; img: string; qty: number }>({
+  name: '',
+  img: '',
+  qty: 0
+})
 
 const sideRewards = computed(() => [
   { name: 'Emblem', img: '/static/images/prize@2x.png', bgStyle: {} },
@@ -135,18 +146,17 @@ function handleClaim(index: number) {
   if (!item) return
   const isLast = index === list.length - 1
   if (isLast) {
+    centerReward.value = {
+      name: item.name ?? 'Reward',
+      img: item.imageUrl ?? '',
+      qty: item.quantity ?? 10
+    }
     showCongratsDialog.value = true
   } else {
-    const rewardConfig = rewardDisplayList[index] ??
-      rewardDisplayList[0] ?? {
-        name: 'Reward',
-        img: '/static/images/prize@2x.png',
-        qty: 10
-      }
     claimDialogReward.value = {
-      name: rewardConfig.name,
-      img: rewardConfig.img,
-      qty: rewardConfig.qty ?? 10
+      name: item.name ?? 'Reward',
+      img: item.imageUrl ?? '',
+      qty: item.quantity ?? 10
     }
     showClaimDialog.value = true
   }
@@ -285,9 +295,18 @@ function handleCongratsConfirm() {
     top: 8px;
     font-size: 26px;
     font-weight: var(--font-medium);
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     z-index: 2;
     color: rgb(46, 48, 54);
+
+    &__muted {
+      color: rgb(46, 48, 54);
+    }
+
+    &__num,
+    &__highlight {
+      color: rgb(255, 49, 49);
+      font-weight: var(--font-extra-bold);
+    }
   }
 }
 

@@ -29,29 +29,30 @@ defineOptions({
   name: 'SideBanner'
 })
 
-type Slide = {
+export interface SlideItem {
   bgImage: string
-  title: string
-  subtitle: string
+  title?: string
+  subtitle?: string
 }
 
-const slides = ref<Slide[]>([
+const props = withDefaults(
+  defineProps<{
+    slides?: SlideItem[]
+    autoplayInterval?: number
+  }>(),
   {
-    bgImage: `linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #0f2027 100%)`,
-    title: 'S44',
-    subtitle: 'BR-RANKED'
-  },
-  {
-    bgImage: `linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)`,
-    title: '1 MAR',
-    subtitle: 'EVENT'
-  },
-  {
-    bgImage: `linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #0f2027 100%)`,
-    title: '',
-    subtitle: 'LOREM IPSUM 123'
+    slides: () => [],
+    autoplayInterval: 4000
   }
-])
+)
+
+const slides = computed(() => {
+  if (props.slides.length > 0) return props.slides
+  return [
+    { bgImage: 'url(/images/banner-img@2x.png)' },
+    { bgImage: 'url(/images/banner-img@2x.png)' }
+  ]
+})
 
 /** 无限循环用：首尾各克隆一页 [last, ...original, first] */
 const loopSlides = computed(() => {
@@ -63,6 +64,8 @@ const loopSlides = computed(() => {
   if (!last || !first) return list
   return [last, ...list, first]
 })
+
+const slideCount = computed(() => slides.value.length)
 
 const scrollRef = ref<HTMLElement | null>(null)
 const activeIndex = ref(0)
@@ -84,7 +87,7 @@ function onScroll() {
   if (isJumping) return
   const el = scrollRef.value
   if (!el) return
-  const n = slides.value.length
+  const n = slideCount.value
   const w = el.offsetWidth
   const rawIndex = Math.round(el.scrollLeft / w)
 
@@ -117,14 +120,15 @@ let autoplayTimer: ReturnType<typeof setInterval> | null = null
 
 onMounted(() => {
   const el = scrollRef.value
-  if (el && slides.value.length > 1) {
+  if (el && slideCount.value > 1) {
     el.scrollLeft = el.offsetWidth
   }
   autoplayTimer = setInterval(() => {
-    const n = slides.value.length
+    const n = slideCount.value
+    if (n <= 1) return
     const next = (activeIndex.value + 1) % n
     goTo(next)
-  }, 4000)
+  }, props.autoplayInterval)
 })
 
 onUnmounted(() => {

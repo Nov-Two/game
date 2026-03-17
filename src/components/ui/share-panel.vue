@@ -1,25 +1,19 @@
 <template>
   <GfrContainer class="app-share">
     <div class="app-share__panel" role="main" aria-label="Share">
-      <div class="app-share__toolbar">
-        <GfrButton class="app-share__close" aria-label="Close" @click="emit('close')">
-          <!-- <img
-            src="/static/images/close@1x.png"
-            srcset="/static/images/close@1x.png 1x, /static/images/close@2x.png 2x, /static/images/close@3x.png 3x"
-            alt=""
-          /> -->
-        </GfrButton>
-      </div>
-
-      <div class="app-share__tip">
+      <div class="app-share__tip" :class="{ 'app-share__tip--rank-after-threshold': sharePageRankAfterThreshold }">
         <span class="app-share__tip__label">
-          {{ fixTransify('nickname have played 100 matches with friends! Ranked in region') }}
+          <span class="app-share__tip__nickname">{{ displayName }}</span>
+          <span class="app-share__tip__text">{{ fixTransify('SHARE_HAVE_PLAYED_AFTER_NICKNAME') }}</span>
+          <span class="app-share__tip__num">{{ matchesPlayed }}</span>
+          <span class="app-share__tip__highlight">{{ fixTransify('SHARE_MATCHES') }}</span>
+          <span class="app-share__tip__text">{{ fixTransify('SHARE_WITH_FRIENDS_RANKED') }}</span>
         </span>
       </div>
 
-      <div class="app-share__rank">
+      <div v-if="sharePageShowRankAndBadge" class="app-share__rank">
         <img class="app-share__rank-icon" src="/static/images/icon@2x.png" alt="" />
-        <div class="app-share__rank-text">{{ rankText }}</div>
+        <div class="app-share__rank-text">{{ sharePageRankText }}</div>
       </div>
 
       <div class="app-share__progress">
@@ -30,33 +24,33 @@
 </template>
 
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
 import GfrContainer from '@/components/ui/container.vue'
-import GfrButton from '@/components/ui/button.vue'
 import GfrProgress from '@/components/ui/progress.vue'
 import { useStore } from '@/stores'
 
 const store = useStore()
 const { fixTransify } = store
+const { sharePageRankText, sharePageShowRankAndBadge, sharePageRankAfterThreshold } = storeToRefs(store)
 
 defineOptions({
   name: 'AppSharePanel'
 })
 
-defineProps<{
+const props = defineProps<{
   displayName: string
   matchesPlayed: number
   tipBefore: string
   tipAfter: string
-  rankText: string
   currentValue: number
   milestones: Array<{ value: number; isLingQu?: boolean }>
   shareDisabled: boolean
   isRefreshing: boolean
 }>()
 
-const emit = defineEmits<{
-  close: []
-  refresh: []
+const { displayName, matchesPlayed } = props
+
+defineEmits<{
   share: []
 }>()
 </script>
@@ -76,35 +70,20 @@ const emit = defineEmits<{
   position: relative;
 }
 
-.app-share__toolbar {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  z-index: 2;
-}
-
-.app-share__close {
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-
-  img {
-    width: 30px;
-    height: 30px;
-  }
-}
-
 .app-share__tip {
   position: relative;
   display: flex;
-  height: 86px;
+  min-height: 86px;
   margin: auto;
   width: 78%;
   justify-content: center;
   align-items: center;
+  box-sizing: border-box;
+
+  &--rank-after-threshold {
+    margin-top: 20px;
+    margin-bottom: 50px;
+  }
 }
 
 .app-share__tip::before {
@@ -122,22 +101,31 @@ const emit = defineEmits<{
 }
 
 .app-share__tip__label {
+  display: block;
+  width: 100%;
+  max-width: 100%;
   font-size: 26px;
   font-weight: var(--font-extra-bold);
   color: #fff;
   z-index: 2;
   padding-top: 22px;
+  text-align: center;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
-// .app-share__name {
-//   margin-right: 6px
-// }
+.app-share__tip__nickname,
+.app-share__tip__text {
+  color: #fff;
+}
 
-// .app-share__highlight {
-//   color: rgb(255, 235, 0);
-//   text-shadow: 0 0 12px rgba(255, 235, 0, .35);
-//   padding: 0 4px
-// }
+.app-share__tip__num,
+.app-share__tip__highlight {
+  color: rgb(220, 255, 0);
+  font-weight: var(--font-extra-bold);
+}
 
 .app-share__rank {
   display: flex;

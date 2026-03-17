@@ -37,7 +37,13 @@
               class="gfr-progress__reward-img-inner"
             />
           </div>
-          <div v-if="hasRewardQuantity(index)" class="gfr-progress__reward-qty" :style="rewardQtyStyle(index)"></div>
+          <div
+            v-if="hasRewardQuantity(index)"
+            class="gfr-progress__reward-qty"
+            :class="{ 'gfr-progress__reward-qty--claimed': getStatus(index) === 'claimed' }"
+          >
+            {{ rewardQtyText(index) }}
+          </div>
         </div>
         <div
           v-if="isButtonVisible(index)"
@@ -110,11 +116,6 @@ const rewardBtnUrls: Record<string, string> = {
   unclaimed: `${baseUrl}static/images/weilingqu_btn@2x.png`,
   claimable: `${baseUrl}static/images/zhenglingqu_btn@2x.png`
 }
-const quantityImgUrls: Record<string, string> = {
-  claimed: `${baseUrl}static/images/quantity-ylq@2x.jpg`,
-  default: `${baseUrl}static/images/quantity@2x.png`
-}
-
 const buttonTextKeys: Record<string, string> = {
   unclaimed: 'MILESTONE_BTN_UNCLAIMED',
   claimable: 'MILESTONE_BTN_CLAIMABLE',
@@ -152,15 +153,10 @@ function hasRewardQuantity(index: number): boolean {
   return typeof q === 'number' && !Number.isNaN(q) && q > 0
 }
 
-function rewardQtyStyle(index: number) {
-  const status = getStatus(index)
-  const url = status === 'claimed' ? quantityImgUrls.claimed : quantityImgUrls.default
-  return {
-    backgroundImage: `url(${url})`,
-    backgroundSize: 'contain',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat'
-  }
+/** 奖品数量展示文案：x + 数量，如 x10 */
+function rewardQtyText(index: number): string {
+  const q = list.value[index]?.quantity
+  return typeof q === 'number' && !Number.isNaN(q) && q > 0 ? `x${q}` : ''
 }
 
 function rewardBtnStyle(index: number) {
@@ -199,8 +195,8 @@ function buttonTextColor(index: number): string {
 function onClaim(index: number) {
   if (getStatus(index) !== 'claimable') {
     Toast({
-      message: fixTransify('TOAST_TASK_NOT_COMPLETE'),
-      backgroundImage: `${baseUrl}static/images/toast@2x.png`
+      message: fixTransify('TOAST_TASK_NOT_COMPLETE')
+      // backgroundImage: `${baseUrl}static/images/toast@2x.png`,
       // duration: 200000
     })
     return
@@ -233,7 +229,7 @@ function onClaim(index: number) {
 .gfr-progress__track {
   width: 100%;
   position: relative;
-  height: 14px;
+  height: 16px;
   background-color: rgb(38, 33, 78);
   border-radius: 20px;
   border-bottom: 0.5px solid rgb(0, 221, 255);
@@ -321,6 +317,7 @@ function onClaim(index: number) {
   flex-direction: column;
   align-items: center;
   position: relative;
+  margin-top: 10px;
 }
 
 .gfr-progress__reward--highlight {
@@ -359,15 +356,17 @@ function onClaim(index: number) {
 .gfr-progress__reward-qty {
   position: absolute;
   right: 10%;
-  bottom: 18%;
-  width: 46px;
-  height: 21px;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+  bottom: 13%;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 30px;
+  font-weight: var(--font-extra-bold);
+  font-style: italic;
+  color: #000;
+  &--claimed {
+    color: #fff;
+  }
 }
 
 .gfr-progress__reward-btn {

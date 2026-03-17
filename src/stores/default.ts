@@ -57,7 +57,12 @@ const defaultTransify: Transify = {
   COUNTDOWN_HOUR_UNIT: 'H',
   MILESTONE_BTN_UNCLAIMED: 'unclaimed',
   MILESTONE_BTN_CLAIMABLE: 'claimable',
-  MILESTONE_BTN_CLAIMED: 'claimed'
+  MILESTONE_BTN_CLAIMED: 'claimed',
+  SHARE_HAVE_PLAYED: 'You have played ',
+  SHARE_HAVE_PLAYED_AFTER_NICKNAME: ' have played ',
+  SHARE_MATCHES: ' matches ',
+  SHARE_WITH_FRIENDS: ' with friends',
+  SHARE_WITH_FRIENDS_RANKED: ' with friends! Ranked in region.'
 }
 
 export { defaultTransify }

@@ -21,15 +21,20 @@
           <img src="/static/images/close@2x.png" alt="" />
         </GfrButton>
 
-        <h2 id="app-congrats-title" class="app-congrats-dialog__title">CONGRATULATIONS</h2>
+        <h2 id="app-congrats-title" class="app-congrats-dialog__title">{{ fixTransify('CONGRATULATIONS') }}</h2>
 
         <div class="app-congrats-dialog__rewards">
           <div class="app-congrats-dialog__reward-img">
-            <img src="/static/images/prize@2x.png" alt="" />
+            <img
+              :src="centerReward.img || '/static/images/prize@2x.png'"
+              :alt="centerReward.name"
+              class="app-congrats-dialog__reward-img-inner"
+            />
+            <span v-if="centerReward.qty != null" class="app-congrats-dialog__reward-qty">x{{ centerReward.qty }}</span>
           </div>
         </div>
 
-        <p class="app-congrats-dialog__reward-name">PW_PP19_Rainforest</p>
+        <p class="app-congrats-dialog__reward-name">{{ centerReward.name }}</p>
 
         <GfrButton class="app-congrats-dialog__confirm" @click="handleConfirm">
           <span class="app-congrats-dialog__confirm-text">{{ confirmText }}</span>
@@ -43,17 +48,33 @@
 <script setup lang="ts">
 import GfrOverlay from '@/components/ui/overlay.vue'
 import GfrButton from '@/components/ui/button.vue'
+import { useStore } from '@/stores'
+
+const store = useStore()
+const { fixTransify } = store
 
 defineOptions({
   name: 'AppCongratsDialog'
 })
 
+export interface CongratsCenterReward {
+  name: string
+  img?: string
+  qty?: number
+}
+
 withDefaults(
   defineProps<{
+    centerReward?: CongratsCenterReward
     confirmText?: string
     footerText?: string
   }>(),
   {
+    centerReward: () => ({
+      name: 'Reward',
+      img: '/static/images/prize@2x.png',
+      qty: 10
+    }),
     confirmText: 'CONFIRM',
     footerText: ''
   }
@@ -95,6 +116,10 @@ function handleConfirm() {
   background-position: center;
   background-repeat: no-repeat;
   pointer-events: none;
+
+  @media (min-width: 768px) {
+    background-size: 40%;
+  }
 }
 
 .app-congrats-dialog__close {
@@ -113,8 +138,8 @@ function handleConfirm() {
   border: none;
 
   img {
-    width: 32px;
-    height: 32px;
+    width: 48px;
+    height: 48px;
     // filter: brightness(0) invert(1);
   }
 }
@@ -138,16 +163,29 @@ function handleConfirm() {
 }
 
 .app-congrats-dialog__reward-img {
-  position: relative;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-block;
+  width: 206px;
+  height: 266px;
+}
 
-  img {
-    position: absolute;
-    left: 43%;
-    top: 120px;
-    width: 206px;
-    height: 266px;
-    object-fit: contain;
-  }
+.app-congrats-dialog__reward-img-inner {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.app-congrats-dialog__reward-qty {
+  position: absolute;
+  bottom: 0;
+  right: -5%;
+  font-size: 30px;
+  font-weight: var(--font-extra-bold);
+  font-style: italic;
+  color: #fff;
 }
 
 .app-congrats-dialog__reward-name {

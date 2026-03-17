@@ -28,11 +28,7 @@
         :style="{ '--gfr-dialog-duration': `${duration}ms` }"
       >
         <GfrButton v-if="showClose" :class="['gfr-dialog-close', closeClass]" @click="triggerClose" aria-label="Close">
-          <img
-            src="/static/images/close@1x.png"
-            srcset="/static/images/close@1x.png 1x, /static/images/close@2x.png 2x, /static/images/close@3x.png 3x"
-            alt="close"
-          />
+          <img src="/static/images/close@2x.png" alt="close" />
         </GfrButton>
         <slot />
       </GfrContainer>
@@ -150,8 +146,8 @@ defineExpose({
   height: 47px;
   background-color: transparent;
   img {
-    width: 30px;
-    height: 30px;
+    width: 48px;
+    height: 48px;
   }
   // border-radius: var(--radius);
   // background: var(--light);

@@ -12,7 +12,11 @@ export default {
       msg: '',
       data: {
         player: {
-          uid: 10000021
+          uid: 10000021,
+          nickname: 'nickname',
+          matches_played: 100,
+          // ranking: 1
+          ranking: 1001
         },
         event_config: {
           start_time: 1637824845,

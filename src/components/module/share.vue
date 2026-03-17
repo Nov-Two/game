@@ -4,7 +4,6 @@
     :matches-played="matchesPlayed"
     :tip-before="tipBefore"
     :tip-after="tipAfter"
-    :rank-text="rankText"
     :current-value="currentValue"
     :milestones="milestones"
     :share-disabled="shareDisabled"
@@ -18,11 +17,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useStore } from '@/stores'
 import { useGame } from '@/composables/useGame'
 import { history } from '@/lib/apis'
-import AppSharePanel from '@/components/module/share-panel.vue'
+import AppSharePanel from '@/components/ui/share-panel.vue'
+import type { MilestoneItem } from '@/composables/useMilestoneProgress'
 
 defineOptions({
   name: 'AppShareModule'
@@ -38,16 +38,27 @@ const { fixTransify } = store
 const { isInGame, runScreenShot } = useGame()
 
 const currentValue = ref(12000)
-const milestones = ref<Array<{ value: number; isLingQu?: boolean }>>([
-  { value: 200000, isLingQu: true },
-  { value: 300000, isLingQu: true },
-  { value: 600000, isLingQu: false },
-  { value: 10_000_000, isLingQu: false }
+const milestones = ref<Array<MilestoneItem & { name: string }>>([
+  { value: 2000, isLingQu: true, quantity: 10, imageUrl: '/static/images/prize@2x.png', name: 'Reward 1' },
+  { value: 3000, isLingQu: false, quantity: 10, imageUrl: '/static/images/prize2@2x.png', name: 'Reward 2' },
+  { value: 6000, isLingQu: false, quantity: 10, imageUrl: '/static/images/prize3@2x.png', name: 'Reward 3' },
+  { value: 10_000, isLingQu: false, quantity: 10, imageUrl: '/static/images/prize2@2x.png', name: 'Reward 4' }
 ])
 
 const matchesPlayed = ref(100)
-const rank = ref<number | null>(900)
 const isRefreshing = ref(false)
+
+function initShareDataFromPlayer() {
+  const playerUnknown: unknown = store.state.player
+  if (playerUnknown && typeof playerUnknown === 'object') {
+    const player = playerUnknown as Record<string, unknown>
+    const ranking = player['ranking']
+    if (typeof ranking === 'number' && Number.isFinite(ranking)) store.setSharePageRank(ranking)
+    const matches = player['matches_played']
+    if (typeof matches === 'number' && Number.isFinite(matches)) matchesPlayed.value = matches
+  }
+}
+initShareDataFromPlayer()
 
 const displayName = computed(() => {
   const playerUnknown: unknown = store.state.player
@@ -62,7 +73,6 @@ const displayName = computed(() => {
   return 'Nickname'
 })
 
-const rankText = computed(() => (rank.value == null ? '--' : `${rank.value}th`))
 const shareDisabled = computed(() => !isInGame.value)
 const tipBefore = computed(() => fixTransify('have played'))
 const tipAfter = computed(() => fixTransify('matches with friends! Ranked in region.'))
@@ -84,7 +94,7 @@ async function handleRefresh() {
       const maybeMatches = data['matches_played']
       const maybeRank = data['rank']
       if (typeof maybeMatches === 'number' && Number.isFinite(maybeMatches)) matchesPlayed.value = maybeMatches
-      if (typeof maybeRank === 'number' && Number.isFinite(maybeRank)) rank.value = maybeRank
+      if (typeof maybeRank === 'number' && Number.isFinite(maybeRank)) store.setSharePageRank(maybeRank)
     }
   } finally {
     isRefreshing.value = false
@@ -98,5 +108,9 @@ async function handleShare() {
 
 onMounted(() => {
   void handleRefresh()
+})
+
+onUnmounted(() => {
+  store.setSharePageRank(null)
 })
 </script>
