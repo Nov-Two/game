@@ -51,9 +51,13 @@ const defaultTransify: Transify = {
   TOAST_SERVER_NOTWORK: 'Service unavailable',
   TOAST_SERVER_TIMEOUT: 'Service timeout',
   TOAST_WRONG_REGION: 'This event is not available for your region',
+  TOAST_TASK_NOT_COMPLETE: '未完成任务,不可领取',
   COUNTDOWN_LABEL: 'COUNTDOWN:',
   COUNTDOWN_DAY_UNIT: 'D',
-  COUNTDOWN_HOUR_UNIT: 'H'
+  COUNTDOWN_HOUR_UNIT: 'H',
+  MILESTONE_BTN_UNCLAIMED: 'unclaimed',
+  MILESTONE_BTN_CLAIMABLE: 'claimable',
+  MILESTONE_BTN_CLAIMED: 'claimed'
 }
 
 export { defaultTransify }

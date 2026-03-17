@@ -17,7 +17,7 @@
       @before-leave="handleClose"
       @before-enter="handleOpen"
     >
-      <div v-show="visible" :class="['gfr-toast', `gfr-toast-${position}`]">
+      <div v-show="visible" :class="['gfr-toast', `gfr-toast-${position}`]" :style="toastStyle">
         <slot />
         <slot name="message" />
       </div>
@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import GfrOverlay from '@/components/ui/overlay.vue'
-import { watchEffect } from 'vue'
+import { computed, watchEffect } from 'vue'
 defineOptions({
   name: 'GfrToast'
 })
@@ -40,6 +40,7 @@ interface ToastProps {
   lockScroll?: boolean
   duration?: number
   message?: string
+  backgroundImage?: string
 }
 
 const {
@@ -49,8 +50,20 @@ const {
   closeable = true,
   position = 'center',
   lockScroll = true,
-  duration = 2000
+  duration = 2000,
+  backgroundImage
 } = defineProps<ToastProps>()
+
+const toastStyle = computed(() =>
+  backgroundImage
+    ? {
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }
+    : undefined
+)
 const emit = defineEmits(['closed', 'close', 'open', 'opened'])
 const visible = defineModel<boolean>('visible', { required: true, default: false })
 let timer: any = null

@@ -10,6 +10,8 @@ export type ToastOptions = {
   lockScroll?: boolean
   teleport?: string
   zIndex?: number
+  /** 可选背景图 URL，传入时 toast 容器使用该图作为背景 */
+  backgroundImage?: string
   onClose?: () => void
   onOpen?: () => void
   onClosed?: () => void

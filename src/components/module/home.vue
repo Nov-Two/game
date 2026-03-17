@@ -16,7 +16,7 @@
       <!-- 块2：里程碑 + 奖励卡片 -->
       <GfrContainer class="app-home-main__middle">
         <div class="app-home">
-          <AppProgress :current-value="currentValue" :milestones="milestones" @claim="handleClaim" />
+          <GfrProgress :current-value="currentValue" :milestones="milestones" @claim="handleClaim" />
         </div>
       </GfrContainer>
 
@@ -56,7 +56,7 @@
 import { ref, computed } from 'vue'
 import { useStore } from '@/stores'
 import GfrContainer from '@/components/ui/container.vue'
-import AppProgress from '@/components/module/progress.vue'
+import GfrProgress from '@/components/ui/progress.vue'
 import AppSideBanner from '@/components/module/side-banner.vue'
 import AppClaimDialog from '@/components/app/claim-dialog.vue'
 import AppCongratsDialog from '@/components/app/congrats-dialog.vue'
@@ -71,15 +71,15 @@ defineOptions({
   name: 'AppHomeModule'
 })
 
-const currentValue = ref(12000)
-const milestones = ref<Array<{ value: number; isLingQu?: boolean }>>([
+const currentValue = ref(10000)
+const milestones = ref<Array<{ value: number; isLingQu?: boolean; quantity?: number }>>([
   { value: 2000, isLingQu: true },
   { value: 3000, isLingQu: true },
-  { value: 6000, isLingQu: false },
-  { value: 10_000, isLingQu: false }
+  { value: 6000, isLingQu: false, quantity: 10 },
+  { value: 10_000, isLingQu: false, quantity: 10 }
 ])
 
-const showClaimDialog = ref(false)
+const showClaimDialog = ref(true)
 const showCongratsDialog = ref(false)
 
 /** 普通领取弹框展示的奖励（非最后一档时使用） */
@@ -137,11 +137,12 @@ function handleClaim(index: number) {
   if (isLast) {
     showCongratsDialog.value = true
   } else {
-    const rewardConfig = rewardDisplayList[index] ?? rewardDisplayList[0] ?? {
-      name: 'Reward',
-      img: '/static/images/prize@2x.png',
-      qty: 10
-    }
+    const rewardConfig = rewardDisplayList[index] ??
+      rewardDisplayList[0] ?? {
+        name: 'Reward',
+        img: '/static/images/prize@2x.png',
+        qty: 10
+      }
     claimDialogReward.value = {
       name: rewardConfig.name,
       img: rewardConfig.img,
@@ -167,7 +168,6 @@ function handleCongratsConfirm() {
   gap: 22px;
   width: 100%;
   padding-bottom: 19px;
-  padding-top: 20px;
   min-height: 0;
   flex: 1;
 }
@@ -183,17 +183,15 @@ function handleCongratsConfirm() {
 }
 
 .app-home-main__top {
-  height: 104px;
+  min-height: 104px;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   width: 100%;
-  // padding: 0 0 16px;
 }
 
 .app-home-main__motto {
   padding-left: 58px;
-  // margin: 0 0 12px;
   font-size: 26px;
   font-weight: var(--font-medium);
   color: #fff;
@@ -205,37 +203,44 @@ function handleCongratsConfirm() {
   display: flex;
   align-items: center;
   gap: 8px;
-  min-height: 52px;
+  min-height: 56px;
+  padding-top: 8px;
+  box-sizing: border-box;
 }
 
 .app-home-progress::before {
   content: '';
   position: absolute;
-  top: -24px;
+  top: -20px;
   left: 0;
   width: 105%;
-  height: 160%;
+  height: 150%;
   background-image: url('/static/images/current@1x.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   pointer-events: none;
+  z-index: 0;
 }
 
 .app-home-progress__label {
+  position: relative;
+  z-index: 2;
   font-size: 28px;
   font-weight: var(--font-extra-bold);
   color: #fff;
   padding-left: 58px;
-  z-index: 2;
+  line-height: 1.2;
 }
 
 .app-home-progress__value {
+  position: relative;
+  z-index: 2;
   font-size: 38px;
   font-weight: var(--font-extra-bold);
   color: rgb(255, 235, 0);
   text-shadow: 0 0 12px rgba(255, 235, 0, 0.4);
-  z-index: 2;
+  line-height: 1.2;
 }
 
 /* ----- 块2：里程碑 + 奖励卡片（与设计稿留白、间距一致） ----- */

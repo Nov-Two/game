@@ -23,7 +23,7 @@
       </div>
 
       <div class="app-share__progress">
-        <AppProgress :currentValue="currentValue" :milestones="milestones" :showAwardButtons="false" />
+        <GfrProgress :current-value="currentValue" :milestones="milestones" :show-award-buttons="false" />
       </div>
     </div>
   </GfrContainer>
@@ -32,7 +32,7 @@
 <script setup lang="ts">
 import GfrContainer from '@/components/ui/container.vue'
 import GfrButton from '@/components/ui/button.vue'
-import AppProgress from '@/components/module/progress.vue'
+import GfrProgress from '@/components/ui/progress.vue'
 import { useStore } from '@/stores'
 
 const store = useStore()
@@ -63,7 +63,6 @@ const emit = defineEmits<{
 
 <style scoped lang="scss">
 .app-share {
-  padding-top: 20px;
   width: 100%;
   height: 100%;
   display: flex;
