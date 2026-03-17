@@ -75,7 +75,7 @@ onBeforeMount(async () => {
 
 <style lang="scss" scoped>
 .app-home-module {
-  background-image: url('/static/images/bg@2x.jpg');
+  background-image: url('/static/images/bg@2x.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

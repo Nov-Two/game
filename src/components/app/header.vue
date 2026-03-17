@@ -13,25 +13,10 @@
           <img
             v-if="!musicStatus"
             class="app-header__left-icon"
-            src="/static/images/disable-music@1x.png"
-            srcset="
-              /static/images/disable-music@1x.png 1x,
-              /static/images/disable-music@2x.png 2x,
-              /static/images/disable-music@3x.png 3x
-            "
+            src="/static/images/disable-music@2x.png"
             alt="disable-music"
           />
-          <img
-            v-else
-            class="app-header__left-icon"
-            src="/static/images/enable-music@1x.png"
-            srcset="
-              /static/images/enable-music@1x.png 1x,
-              /static/images/enable-music@2x.png 2x,
-              /static/images/enable-music@3x.png 3x
-            "
-            alt="enable-music"
-          />
+          <img v-else class="app-header__left-icon" src="/static/images/enable-music@2x.png" alt="enable-music" />
         </template>
       </GfrSoundEffect>
       <GfrRule

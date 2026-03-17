@@ -225,7 +225,7 @@ function handleCongratsConfirm() {
   left: 0;
   width: 105%;
   height: 150%;
-  background-image: url('/static/images/current@1x.png');
+  background-image: url('/static/images/current@2x.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
