@@ -36,7 +36,7 @@
             <span class="app-claim-dialog__confirm-text">{{ confirmText }}</span>
           </GfrButton>
 
-          <!-- <p class="app-claim-dialog__footer">congratulations congratulations test test</p> -->
+          <p class="app-claim-dialog__footer">congratulations congratulations test test</p>
         </div>
       </div>
     </transition>
@@ -97,35 +97,39 @@ function handleConfirm() {
 <style scoped lang="scss">
 .app-claim-dialog {
   position: relative;
-  width: 100%;
-  height: 100%;
+  width: min(967px, calc(100vw - 48px));
+  max-height: calc(100vh - 48px);
+  aspect-ratio: 967 / 500;
+  height: auto;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: visible;
   text-align: center;
-  padding-top: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: clamp(40px, 8vh, 72px) 24px 28px;
 }
 
 .app-claim-dialog__bg {
   position: absolute;
   inset: 0;
-  width: 967px;
-  height: 500px;
+  width: 100%;
+  height: 100%;
   background-image: url('/static/images/dialog-rule@2x.png');
-  background-size: contain;
+  background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  border-radius: 24px;
 }
 
 .app-claim-dialog__close {
   position: absolute;
-  left: 16%;
-  top: 22%;
+  left: clamp(0px, -2vw, -10px);
+  top: clamp(26px, -2vw, -10px);
   z-index: 2;
-  width: 44px;
-  height: 44px;
+  width: clamp(44px, 6vw, 44px);
+  height: clamp(44px, 6vw, 44px);
   padding: 0;
   display: flex;
   align-items: center;
@@ -134,36 +138,37 @@ function handleConfirm() {
   border: none;
 
   img {
-    width: 48px;
-    height: 48px;
+    width: 100%;
+    height: 100%;
   }
 }
 
 .app-claim-dialog__title {
-  position: relative;
-  top: 13%;
   z-index: 1;
-  font-size: 40px;
+  font-size: clamp(28px, 4.2vw, 40px);
   font-weight: var(--font-extra-bold);
-  margin: 0 0 8px;
   text-transform: uppercase;
   letter-spacing: 2px;
   color: rgb(47, 47, 47);
 }
 
 .app-claim-dialog__reward {
-  height: 60%;
-  position: relative;
+  margin-top: 14px;
   z-index: 1;
-  margin-bottom: 20px;
-  padding-top: 110px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 0;
 }
 
 .app-claim-dialog__reward-icon {
   position: relative;
   display: inline-block;
-  width: 180px;
-  height: 180px;
+  width: clamp(132px, 18vw, 180px);
+  height: clamp(132px, 18vw, 180px);
   background-image: url('/static/images/receive@2x.png');
   background-size: contain;
   background-position: center;
@@ -189,26 +194,26 @@ function handleConfirm() {
 }
 
 .app-claim-dialog__reward-name {
-  margin: 12px 0;
-  font-size: 24px;
+  margin: 0;
+  font-size: clamp(18px, 2.8vw, 24px);
   font-weight: var(--font-bold);
   color: rgb(40, 44, 52);
 }
 
 .app-claim-dialog__confirm {
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
   z-index: 1;
-  width: 300px;
-  height: 90px;
+  width: clamp(220px, 34vw, 309px);
+  height: clamp(64px, 10vw, 60px);
   background-image: url('/static/images/weilingqu_btn@2x.png');
-  background-size: cover;
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
   display: flex;
   justify-content: center;
-  margin-bottom: 8px;
+  align-items: center;
+  padding: 0;
+  margin-top: 6px;
+  background-color: transparent;
 }
 
 .app-claim-dialog__confirm:hover {
@@ -220,7 +225,10 @@ function handleConfirm() {
   font-weight: var(--font-extra-bold);
   color: #fff;
   text-transform: uppercase;
-  padding-top: 10px;
-  // letter-spacing: 1px;
+}
+
+.app-claim-dialog__footer{
+  font-size: 22px;
+  color: rgb(107,107,107);
 }
 </style>

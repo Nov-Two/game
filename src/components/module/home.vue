@@ -77,7 +77,7 @@ defineOptions({
   name: 'AppHomeModule'
 })
 
-const currentValue = ref(9000)
+const currentValue = ref(10000)
 const milestones = ref<Array<MilestoneItem & { name: string }>>([
   { value: 2000, isLingQu: true, quantity: 10, imageUrl: '/static/images/prize@2x.png', name: 'Reward 1' },
   { value: 3000, isLingQu: false, quantity: 10, imageUrl: '/static/images/prize2@2x.png', name: 'Reward 2' },
