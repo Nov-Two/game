@@ -50,7 +50,10 @@ const defaultTransify: Transify = {
   TOAST_SERVER_BUSY: 'Server busy, please try again later',
   TOAST_SERVER_NOTWORK: 'Service unavailable',
   TOAST_SERVER_TIMEOUT: 'Service timeout',
-  TOAST_WRONG_REGION: 'This event is not available for your region'
+  TOAST_WRONG_REGION: 'This event is not available for your region',
+  COUNTDOWN_LABEL: 'COUNTDOWN:',
+  COUNTDOWN_DAY_UNIT: 'D',
+  COUNTDOWN_HOUR_UNIT: 'H'
 }
 
 export { defaultTransify }

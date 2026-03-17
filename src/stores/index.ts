@@ -58,7 +58,7 @@ export const useStore = defineStore('common', () => {
   // }
   async function initConfig() {
     // TODO: Fix why vue router cannot get query parameters
-    const accessToken = urlQuery('access_token') || session.getItem('accessToken')
+    let accessToken = urlQuery('access_token') || session.getItem('accessToken')
     const appRegion = urlQuery('region') || session.getItem('region')
     const appLang = urlQuery('lang') || session.getItem('lang')
     if (accessToken) {
@@ -71,12 +71,17 @@ export const useStore = defineStore('common', () => {
       session.setItem('lang', appLang)
     }
     if (!accessToken) {
-      return Toast({
-        message: fixTransify('TOAST_LOGIN_FAILED'),
-        duration: 0,
-        closeable: false,
-        overlayColor: 'rgba(0, 0, 0, 1)'
-      })
+      if (import.meta.env.MODE === 'development') {
+        accessToken = 'dev'
+        session.setItem('accessToken', accessToken)
+      } else {
+        return Toast({
+          message: fixTransify('TOAST_LOGIN_FAILED'),
+          duration: 0,
+          closeable: false,
+          overlayColor: 'rgba(0, 0, 0, 1)'
+        })
+      }
     }
     if (import.meta.env.MODE !== 'development' && import.meta.env.VITE_APP_CUSTOM_CSS === 'true') {
       // custom images css
@@ -93,7 +98,8 @@ export const useStore = defineStore('common', () => {
     state.lang = event_config.lang || 'en'
     state.player = player
     state.eventConfig = event_config
-    state.transify = transify
+    // 与默认文案合并，避免接口未返回的 key（如 COUNTDOWN_LABEL）被清空导致页面显示 key 而非翻译
+    state.transify = { ...defaultTransify, ...transify }
     console.log(data)
     if (policy_popup) {
       const { popup_title: policyTitle, popup_content: policyCtx, checked: policyHide } = policy_popup

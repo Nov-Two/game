@@ -44,26 +44,35 @@
       >
         <template #trigger>
           <GfrButton class="app-header__rule-button">
-            <img
-              class="app-header__left-icon"
-              src="/static/images/rule@1x.png"
-              srcset="/static/images/rule@1x.png 1x, /static/images/rule@2x.png 2x, /static/images/rule@3x.png 3x"
-              alt="rule"
-            />
+            <img class="app-header__left-icon" src="/static/images/rule@2x.png" alt="rule" />
           </GfrButton>
         </template>
       </GfrRule>
     </div>
     <div class="app-header__center">
-      <!-- <GfrHeading
-        type="gradient"
-        :gradient="{ color: 'linear-gradient(to bottom, #fff, #fff)' }"
-        :data-text="fixTransify('Regional Progress Setting')"
-      >
-      </GfrHeading> -->
-      <GfrHeading>
+      <GfrHeading class="app-header__center-title">
         {{ fixTransify('Regional Progress Setting') }}
       </GfrHeading>
+      <div class="app-header__center-cutdown">
+        <span class="app-header__center-cutdown-left">{{ countdownLabel }}</span>
+        <div class="app-header__center-cutdown-right">
+          <template v-if="countdown.mode === 'ddhh'">
+            <span class="app-header__countdown-num">{{ countdown.days }}</span
+            ><span class="app-header__countdown-unit">{{ countdown.dayUnit }}</span>
+            <span class="app-header__countdown-space"> </span>
+            <span class="app-header__countdown-num">{{ countdown.hours }}</span
+            ><span class="app-header__countdown-unit">{{ countdown.hourUnit }}</span>
+          </template>
+          <template v-else-if="countdown.mode === 'hms'">
+            <span class="app-header__countdown-num">{{ countdown.h }}</span
+            ><span class="app-header__countdown-unit">:</span>
+            <span class="app-header__countdown-num">{{ countdown.m }}</span
+            ><span class="app-header__countdown-unit">:</span>
+            <span class="app-header__countdown-num">{{ countdown.s }}</span>
+          </template>
+          <span v-else class="app-header__countdown-unit">--</span>
+        </div>
+      </div>
     </div>
     <div class="app-header-uid">
       <span>UID: {{ state.player.uid }}</span>
@@ -79,11 +88,12 @@ import GfrHeading from '@/components/ui/heading.vue'
 import sounds from '@/lib/sounds'
 import { useStore } from '@/stores'
 import { storeToRefs } from 'pinia'
-import { computed, onBeforeMount, ref } from 'vue'
+import { computed, onBeforeMount, onUnmounted, ref, watch } from 'vue'
 import { useGame } from '@/composables/useGame'
 import { useSound } from '@/composables/useSound'
 import Toast from '@/components/ui/toast'
 import { useGA } from '@/composables/useGA'
+import { formatCountdown } from '@/lib/utils'
 const { addGA } = useGA()
 const { getGameVolume } = useGame()
 const { createSounds, playSounds } = useSound()
@@ -120,6 +130,54 @@ const handleRuleOpen = (type: 'open' | 'close') => {
   addGA(`rule_${type}`, true)
   playSounds(type === 'open' ? 'popup' : 'close')
 }
+
+// 倒计时：根据后台配置的活动结束时间，复用 utils.formatCountdown；>24h 显示 DD HH，<=24h 显示 HH:MM:SS，D/H 走 transify
+const countdownLabel = computed(() => fixTransify('COUNTDOWN_LABEL'))
+const countdownEndTime = computed(() => {
+  const end = state.value.eventConfig?.end_time
+  if (end == null || typeof end !== 'number') return 0
+  return end * 1000
+})
+const countdownRemaining = ref(0)
+const countdown = computed(() => {
+  const raw = formatCountdown(Math.floor(countdownRemaining.value / 1000))
+  if (raw.mode === 'ddhh') {
+    return {
+      ...raw,
+      dayUnit: fixTransify('COUNTDOWN_DAY_UNIT'),
+      hourUnit: fixTransify('COUNTDOWN_HOUR_UNIT')
+    }
+  }
+  return raw
+})
+
+let countdownTimer: ReturnType<typeof setInterval> | null = null
+function tickCountdown() {
+  const end = countdownEndTime.value
+  countdownRemaining.value = end > 0 ? Math.max(0, end - Date.now()) : 0
+}
+function startCountdownTimer() {
+  if (countdownTimer) return
+  const end = countdownEndTime.value
+  if (end <= 0) return
+  tickCountdown()
+  countdownTimer = setInterval(tickCountdown, 1000)
+}
+watch(
+  countdownEndTime,
+  (end) => {
+    if (end > 0) startCountdownTimer()
+  },
+  { immediate: true }
+)
+onBeforeMount(() => {
+  tickCountdown()
+  startCountdownTimer()
+})
+onUnmounted(() => {
+  if (countdownTimer) clearInterval(countdownTimer)
+  countdownTimer = null
+})
 </script>
 
 <style lang="scss" scoped>
@@ -136,7 +194,7 @@ const handleRuleOpen = (type: 'open' | 'close') => {
   position: relative;
   flex: 1;
   padding: 0 180px;
-  h1 {
+  .app-header__center-title {
     font-size: 40px;
     font-weight: var(--font-extra-bold);
     color: #fff;
@@ -144,21 +202,51 @@ const handleRuleOpen = (type: 'open' | 'close') => {
     text-align: center;
     line-height: 1;
     padding: 0 20px;
-  }
-  .app-header__center-bottom {
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    img {
-      width: 158px;
-      height: 19px;
-    }
-    // width: 158px;
-    // height: 19px;
-    // position: absolute;
+    // letter-spacing: 2px;
+    text-shadow:
+      -2px -2px 0 #4a90e2,
+      2px -2px 0 #4a90e2,
+      -2px 2px 0 #4a90e2,
+      2px 2px 0 #4a90e2,
+      -4px -4px 0 #2c5aa0,
+      4px -4px 0 #2c5aa0,
+      -4px 4px 0 #2c5aa0,
+      4px 4px 0 #2c5aa0,
+      0 10px 20px rgba(0, 0, 0, 0.5);
   }
 }
+
+.app-header__center-cutdown {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 26px;
+  font-weight: var(--font-extra-bold);
+  text-transform: uppercase;
+}
+.app-header__center-cutdown-left {
+  color: rgb(255, 255, 255);
+  font-weight: var(--font-extra-bold);
+}
+.app-header__center-cutdown-right {
+  display: inline-flex;
+  align-items: baseline;
+  color: rgb(255, 255, 255);
+  font-weight: var(--font-extra-bold);
+}
+.app-header__countdown-num {
+  color: rgb(220, 255, 0);
+  font-variant-numeric: tabular-nums;
+}
+.app-header__countdown-unit {
+  color: rgb(255, 255, 255);
+}
+.app-header__countdown-space {
+  color: rgb(255, 255, 255);
+  margin: 0 2px;
+}
+
 .app-header__left {
   display: flex;
   align-items: center;

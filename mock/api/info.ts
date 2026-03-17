@@ -1,4 +1,8 @@
 import LangMap from '../lang'
+
+// 开发时倒计时需显示：end_time 设为“当前 + 10 天 16 小时”，页面会显示 COUNTDOWN: 10D 16H
+const getMockEndTime = () => Math.floor(Date.now() / 1000) + 10 * 24 * 3600 + 16 * 3600
+
 export default {
   url: '/api/info',
   method: 'get',
@@ -12,7 +16,7 @@ export default {
         },
         event_config: {
           start_time: 1637824845,
-          end_time: 1639034445,
+          end_time: getMockEndTime(),
           region_lang: 'US',
           region: 'US',
           lang: query.lang || 'en',

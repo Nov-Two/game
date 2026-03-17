@@ -225,35 +225,61 @@ export const loadStyle = async (url: string, preload = false) => {
   }
 }
 
+// 时间单位常量（秒），供 formatDuration / formatCountdown 复用
+const HOUR = 3600
+const DAY = 24 * HOUR
+const MONTH = 30 * DAY
+const YEAR = 365 * DAY
+
 /**
  * @description Format seconds into readable time duration
  * @param {Number} seconds Number of seconds
  * @returns {String} Formatted time string
  */
 const formatDuration = (seconds: number): string => {
-  // Define time unit thresholds (in seconds)
-  const HOUR = 3600
-  const DAY = 24 * HOUR
-  const MONTH = 30 * DAY
-  const YEAR = 365 * DAY
-
   if (seconds < HOUR) {
-    // Less than 1 hour, round up to 1 hour
     return '1h'
   } else if (seconds < DAY) {
-    // Less than 1 day, round to hours
     return Math.floor(seconds / HOUR) + 'h'
   } else if (seconds < MONTH) {
-    // Less than 1 month, round to days
     return Math.floor(seconds / DAY) + 'd'
   } else if (seconds < YEAR) {
-    // Less than 1 year, round to months
-    const months = Math.floor(seconds / MONTH)
-    return months + 'M'
+    return Math.floor(seconds / MONTH) + 'M'
   } else {
-    // Greater than or equal to 1 year, round to years
-    const years = Math.floor(seconds / YEAR)
-    return years + 'Y'
+    return Math.floor(seconds / YEAR) + 'Y'
+  }
+}
+
+/**
+ * @description 倒计时展示：根据剩余秒数，>24h 返回 DD HH 结构，<=24h 返回 HH:MM:SS 结构，供 UI 配合 transify 展示
+ * @param {Number} secondsRemaining 剩余秒数（>=0）
+ * @returns 结构化数据，单位 D/H 由调用方用 transify 替换
+ */
+export type CountdownFormatted =
+  | { mode: 'ddhh'; days: string; hours: string }
+  | { mode: 'hms'; h: string; m: string; s: string }
+  | { mode: 'ended' }
+
+const formatCountdown = (secondsRemaining: number): CountdownFormatted => {
+  const total = Math.max(0, Math.floor(secondsRemaining))
+  if (total === 0) return { mode: 'ended' }
+  if (total > DAY) {
+    const days = Math.floor(total / DAY)
+    const hours = Math.floor((total % DAY) / HOUR)
+    return {
+      mode: 'ddhh',
+      days: String(days),
+      hours: String(hours).padStart(2, '0')
+    }
+  }
+  const h = Math.floor(total / HOUR)
+  const m = Math.floor((total % HOUR) / 60)
+  const s = total % 60
+  return {
+    mode: 'hms',
+    h: String(h).padStart(2, '0'),
+    m: String(m).padStart(2, '0'),
+    s: String(s).padStart(2, '0')
   }
 }
 
@@ -267,5 +293,6 @@ export {
   compareByKey,
   keepDecimals,
   formatNumber,
-  formatDuration
+  formatDuration,
+  formatCountdown
 }
