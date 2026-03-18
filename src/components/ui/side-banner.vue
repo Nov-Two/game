@@ -24,10 +24,12 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useSound } from '@/composables/useSound'
 
 defineOptions({
   name: 'SideBanner'
 })
+const { playSounds } = useSound()
 
 export interface SlideItem {
   bgImage: string
@@ -73,6 +75,7 @@ const activeIndex = ref(0)
 let isJumping = false
 
 function goTo(logicalIndex: number) {
+  playSounds('click')
   const el = scrollRef.value
   if (!el) return
   const w = el.offsetWidth

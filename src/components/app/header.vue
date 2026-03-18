@@ -5,7 +5,7 @@
         class="app-header__sound-effect"
         :storage-key="storageKey"
         :volume="volume"
-        :default-enabled="false"
+        :default-enabled="true"
         :sounds="sounds"
         @after-init="handleAfterInit"
         @status-change="handleSoundStatusChange"
@@ -29,7 +29,7 @@
         :dir="state.lang === 'ar' ? 'rtl' : 'ltr'"
       >
         <template #trigger>
-          <GfrButton class="app-header__rule-button">
+          <GfrButton class="app-header__rule-button" :sound="false">
             <img class="app-header__left-icon" src="/static/images/rule@2x.png" alt="rule" />
           </GfrButton>
         </template>
@@ -94,7 +94,7 @@ const ruleContent = computed(() => state.value.eventConfig.rule)
 const handleAfterInit = (howlMap: Record<string, import('howler').Howl>) => {
   createSounds(howlMap)
   const stored = typeof localStorage !== 'undefined' ? localStorage.getItem(storageKey) : null
-  musicStatus.value = stored === 'true'
+  musicStatus.value = stored !== 'false'
   if (musicStatus.value) playSounds('bgm')
   Toast.setDefaultOptions({
     onOpen: () => {

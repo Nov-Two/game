@@ -20,6 +20,7 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useStore } from '@/stores'
 import { useGame } from '@/composables/useGame'
+import { useSound } from '@/composables/useSound'
 import { history } from '@/lib/apis'
 import AppSharePanel from '@/components/ui/share-panel.vue'
 import type { MilestoneItem } from '@/composables/useMilestoneProgress'
@@ -33,6 +34,7 @@ const emit = defineEmits<{
 }>()
 
 const store = useStore()
+const { playSounds } = useSound()
 const { fixTransify } = store
 
 const { isInGame, runScreenShot } = useGame()
@@ -80,11 +82,13 @@ const shareText = computed(() => fixTransify('SHARE'))
 const refreshText = computed(() => fixTransify('REFRESH'))
 
 function handleClose() {
+  playSounds('close')
   emit('close')
 }
 
 async function handleRefresh() {
   if (isRefreshing.value) return
+  playSounds('click')
   isRefreshing.value = true
   try {
     const res = await history()
@@ -103,6 +107,7 @@ async function handleRefresh() {
 
 async function handleShare() {
   if (!isInGame.value) return
+  playSounds('screenshoot')
   await runScreenShot()
 }
 

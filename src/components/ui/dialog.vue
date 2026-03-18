@@ -27,7 +27,7 @@
         @click.stop
         :style="{ '--gfr-dialog-duration': `${duration}ms` }"
       >
-        <GfrButton v-if="showClose" :class="['gfr-dialog-close', closeClass]" @click="triggerClose" aria-label="Close">
+        <GfrButton v-if="showClose" :class="['gfr-dialog-close', closeClass]" :sound="false" @click="triggerClose" aria-label="Close">
           <img src="/static/images/close@2x.png" alt="close" />
         </GfrButton>
         <slot />
@@ -40,10 +40,12 @@
 import GfrContainer from '@/components/ui/container.vue'
 import GfrOverlay from '@/components/ui/overlay.vue'
 import GfrButton from '@/components/ui/button.vue'
+import { useSound } from '@/composables/useSound'
 
 defineOptions({
   name: 'GfrDialog'
 })
+const { playSounds } = useSound()
 
 interface DialogProps {
   type?: 'fade' | 'fall' | 'bounce' | 'zoom'
@@ -86,11 +88,13 @@ const emit = defineEmits<{
 const visible = defineModel<boolean>('visible', { default: false })
 
 function triggerClose() {
+  playSounds('close')
   visible.value = false
 }
 
 function handleTriggerClick() {
   if (props.trigger === 'click') {
+    playSounds('click')
     visible.value = true
   }
 }

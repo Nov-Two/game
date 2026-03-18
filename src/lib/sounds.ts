@@ -10,7 +10,7 @@ export default [
     tag: 'bgm',
     loop: true,
     path: {
-      mpeg: formatSoundUrl('music.mp4')
+      mpeg: formatSoundUrl('bgm.mp3')
     }
   },
   {

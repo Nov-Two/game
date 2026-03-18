@@ -16,7 +16,7 @@
         aria-modal="true"
         @click.stop
       >
-        <GfrButton class="app-congrats-dialog__close" aria-label="Close" @click="handleClose">
+        <GfrButton class="app-congrats-dialog__close" aria-label="Close" :sound="false" @click="handleClose">
           <img src="/static/images/close@2x.png" alt="" />
         </GfrButton>
 
@@ -26,21 +26,23 @@
 
         <div class="app-congrats-dialog__reward">
           <div class="app-congrats-dialog__reward-bg">
-            <img
-              :src="centerReward.img || '/static/images/prize@2x.png'"
-              :alt="centerReward.name"
-              class="app-congrats-dialog__reward-img"
-            />
             <span v-if="centerReward.qty != null" class="app-congrats-dialog__reward-qty">
               <span class="app-congrats-dialog__reward-qty-x">x</span>
               <span class="app-congrats-dialog__reward-qty-num">{{ centerReward.qty }}</span>
             </span>
           </div>
+          <img
+            :src="centerReward.img || '/static/images/prize@2x.png'"
+            :alt="centerReward.name"
+            class="app-congrats-dialog__reward-img"
+          />
+
           <p class="app-congrats-dialog__reward-name">{{ centerReward.name }}</p>
-          <GfrButton class="app-congrats-dialog__confirm" @click="handleConfirm">
+
+          <GfrButton class="app-congrats-dialog__confirm" :sound="false" @click="handleConfirm">
             <span class="app-congrats-dialog__confirm-text">{{ confirmText }}</span>
           </GfrButton>
-          <p class="app-congrats-dialog__footer">congratulations congratulations test test</p>
+          <p class="app-congrats-dialog__footer">{{ footerText || 'congratulations congratulations test test' }}</p>
         </div>
       </div>
     </transition>
@@ -51,9 +53,11 @@
 import GfrOverlay from '@/components/ui/overlay.vue'
 import GfrButton from '@/components/ui/button.vue'
 import { useStore } from '@/stores'
+import { useSound } from '@/composables/useSound'
 
 const store = useStore()
 const { fixTransify } = store
+const { playSounds } = useSound()
 
 defineOptions({
   name: 'AppCongratsDialog'
@@ -77,7 +81,7 @@ withDefaults(
       img: '/static/images/prize@2x.png',
       qty: 10
     }),
-    confirmText: 'CONFIRM',
+    confirmText: 'CONFIREM',
     footerText: ''
   }
 )
@@ -90,11 +94,13 @@ const emit = defineEmits<{
 const visible = defineModel<boolean>('modelValue', { default: false })
 
 function handleClose() {
+  playSounds('close')
   visible.value = false
   emit('close')
 }
 
 function handleConfirm() {
+  playSounds('confirm')
   visible.value = false
   emit('confirm')
 }
@@ -104,20 +110,18 @@ function handleConfirm() {
 .app-congrats-dialog {
   position: relative;
   width: 100%;
-  height: calc(100vh - 96px);
+  height: 100%;
   box-sizing: border-box;
   overflow: hidden;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
+  margin: auto;
+  background-color: transparent;
 }
 
 .app-congrats-dialog__close {
   position: absolute;
-  left: 5%;
-  top: clamp(20px, 3vh, 28px);
+  top: 74px;
+  left: 94px;
   z-index: 2;
   width: 46px;
   height: 46px;
@@ -136,37 +140,24 @@ function handleConfirm() {
 }
 
 .app-congrats-dialog__title {
-  position: relative;
+  position: absolute;
+  top: 52px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 1;
   margin: 0;
-  font-size: clamp(40px, 5vw, 60px);
-  font-weight: var(--font-extra-bold);
-  line-height: 1.1;
-  color: rgb(220, 255, 0);
-  text-shadow: 0 0 20px rgba(220, 255, 0, 0.5);
-  text-transform: uppercase;
-  letter-spacing: -2.4px;
-}
-
-.app-congrats-dialog__reward {
-  position: relative;
-  z-index: 1;
-  flex: 1;
   width: 100%;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-top: 8px;
-  gap: 10px;
+  font-size: 60px;
+  font-weight: 800;
+  line-height: 60px;
+  color: #d7ff1f;
 }
 
 .app-congrats-dialog__reward-bg {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  position: absolute;
+  top: 126px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 600px;
   height: 500px;
   background-image: url('/static/images/big-prices-bg@2x.png');
@@ -176,23 +167,30 @@ function handleConfirm() {
 }
 
 .app-congrats-dialog__reward-img {
-  width: 40%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 249px;
+  height: 311px;
   object-fit: contain;
 }
 
 .app-congrats-dialog__reward-qty {
   position: absolute;
-  right: 33%;
-  bottom: 26%;
-  display: inline-flex;
+  bottom: 30%;
+  right: 30%;
+  display: flex;
   align-items: baseline;
-  color: #fff;
-  font-weight: var(--font-bold);
-  font-style: italic;
+  color: #ffffff;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 
   .app-congrats-dialog__reward-qty-x {
     font-size: 24px;
     line-height: 24px;
+    letter-spacing: -0.96px;
   }
 
   .app-congrats-dialog__reward-qty-num {
@@ -204,21 +202,25 @@ function handleConfirm() {
 
 .app-congrats-dialog__reward-name {
   position: absolute;
-  bottom: 28%;
-  font-size: clamp(24px, 2.6vw, 28px);
-  font-weight: var(--font-bold);
+  top: 532px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 28px;
+  font-weight: 700;
   line-height: 28px;
-  color: #fff;
-  letter-spacing: -1.12px;
+  color: #ffffff;
+  white-space: nowrap;
 }
 
 .app-congrats-dialog__confirm {
-  position: relative;
-  bottom: 8%;
-  width: clamp(320px, 42vw, 420px);
-  height: clamp(68px, 9vw, 88px);
+  position: absolute;
+  top: 580px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 420px;
+  height: 88px;
   padding: 0;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   background-image: url('/static/images/big-prices-btn@2x.png');
@@ -226,9 +228,7 @@ function handleConfirm() {
   background-position: center;
   background-repeat: no-repeat;
   background-color: transparent;
-  border: none;
   cursor: pointer;
-  // margin-top: 6px;
 }
 
 .app-congrats-dialog__confirm:hover {
@@ -236,21 +236,24 @@ function handleConfirm() {
 }
 
 .app-congrats-dialog__confirm-text {
-  font-size: clamp(28px, 3.5vw, 36px);
-  font-weight: var(--font-extra-bold);
-  color: rgb(46, 47, 50);
+  font-size: 36px;
+  font-weight: 800;
+  color: #0e1a3a;
   text-transform: uppercase;
   letter-spacing: -1.44px;
   line-height: 1;
-  margin-bottom: 16px;
+  margin-bottom: 28px; /* Adjust to center text vertically in the button image */
 }
 
 .app-congrats-dialog__footer {
   position: absolute;
-  bottom: 4%;
+  top: 660px;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 24px;
-  font-weight: var(--font-medium);
-  color: rgb(138, 138, 138);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.4);
   letter-spacing: -0.96px;
+  white-space: nowrap;
 }
 </style>

@@ -60,6 +60,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useStore } from '@/stores'
+import { useSound } from '@/composables/useSound'
 import GfrContainer from '@/components/ui/container.vue'
 import GfrProgress from '@/components/ui/progress.vue'
 import AppSideBanner from '@/components/ui/side-banner.vue'
@@ -69,6 +70,7 @@ import type { MilestoneItem } from '@/composables/useMilestoneProgress'
 
 const store = useStore()
 const { fixTransify } = store
+const { playSounds } = useSound()
 const emit = defineEmits<{
   'open-share': []
 }>()
@@ -77,7 +79,7 @@ defineOptions({
   name: 'AppHomeModule'
 })
 
-const currentValue = ref(10000)
+const currentValue = ref(7000)
 const milestones = ref<Array<MilestoneItem & { name: string }>>([
   { value: 2000, isLingQu: true, quantity: 10, imageUrl: '/static/images/prize@2x.png', name: 'Reward 1' },
   { value: 3000, isLingQu: false, quantity: 10, imageUrl: '/static/images/prize2@2x.png', name: 'Reward 2' },
@@ -137,10 +139,12 @@ const congratsProgressValue = computed(() => {
 })
 
 function handleOpenShare() {
+  playSounds('click')
   emit('open-share')
 }
 
 function handleClaim(index: number) {
+  playSounds('click')
   const list = milestones.value
   const item = list[index]
   if (!item) return
@@ -151,6 +155,7 @@ function handleClaim(index: number) {
       img: item.imageUrl ?? '',
       qty: item.quantity ?? 10
     }
+    playSounds('popup')
     showCongratsDialog.value = true
   } else {
     claimDialogReward.value = {
@@ -158,6 +163,7 @@ function handleClaim(index: number) {
       img: item.imageUrl ?? '',
       qty: item.quantity ?? 10
     }
+    playSounds('popup')
     showClaimDialog.value = true
   }
   item.isLingQu = true

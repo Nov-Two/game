@@ -232,7 +232,7 @@ function onClaim(index: number) {
   height: 16px;
   background-color: rgb(38, 33, 78);
   border-radius: 20px;
-  border-bottom: 0.5px solid rgb(0, 221, 255);
+  border-bottom: 1px solid rgb(0, 221, 255);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.33),
     inset 0 3px 7px rgba(0, 0, 0, 0.2);
@@ -355,13 +355,13 @@ function onClaim(index: number) {
 
 .gfr-progress__reward-qty {
   position: absolute;
-  right: 10%;
+  right: 12%;
   bottom: 13%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 30px;
-  font-weight: var(--font-extra-bold);
+  font-weight: 700;
   font-style: italic;
   color: #000;
   &--claimed {

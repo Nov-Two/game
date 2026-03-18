@@ -57,15 +57,18 @@ import GfrDialog from '@/components/ui/dialog.vue'
 import GfrContainer from '@/components/ui/container.vue'
 import GfrScrollArea from '@/components/ui/scroll-area.vue'
 import GfrContent from '@/components/ui/content.vue'
+import { useSound } from '@/composables/useSound'
 
 defineOptions({
   name: 'GfrRule'
 })
+const { playSounds } = useSound()
 
 const scrollAreaRef = ref<InstanceType<typeof GfrScrollArea> | null>(null)
 const isScrollAtBottom = ref(false)
 
 function scrollToBottom() {
+  playSounds('click')
   scrollAreaRef.value?.scrollToBottom?.()
 }
 

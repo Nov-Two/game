@@ -25,9 +25,12 @@
 
 <script setup lang="ts">
 import { watch } from 'vue'
+import { useSound } from '@/composables/useSound'
+
 defineOptions({
   name: 'GfrOverlay'
 })
+const { playSounds } = useSound()
 interface OverlayProps {
   zIndex?: number
   color?: string
@@ -60,6 +63,7 @@ watch(
 )
 const handleClick = () => {
   if (clickable) {
+    playSounds('close')
     emit('click')
     visible.value = false
   }

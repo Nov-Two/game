@@ -57,10 +57,10 @@
       </GfrScrollArea>
       <div class="gfr-policy-bottom" :dir="dir">
         <slot name="model" />
-        <GfrButton v-if="cancelText" class="gfr-policy-bottom-button cancel" @click="handleCancel">
+        <GfrButton v-if="cancelText" class="gfr-policy-bottom-button cancel" :sound="false" @click="handleCancel">
           {{ cancelText }}
         </GfrButton>
-        <GfrButton v-if="confirmText" class="gfr-policy-bottom-button confirm" @click="handleConfirm">
+        <GfrButton v-if="confirmText" class="gfr-policy-bottom-button confirm" :sound="false" @click="handleConfirm">
           {{ confirmText }}
         </GfrButton>
       </div>
@@ -75,9 +75,12 @@ import GfrContainer from '@/components/ui/container.vue'
 import GfrScrollArea from '@/components/ui/scroll-area.vue'
 import GfrContent from '@/components/ui/content.vue'
 import GfrButton from '@/components/ui/button.vue'
+import { useSound } from '@/composables/useSound'
+
 defineOptions({
   name: 'GfrPolicyDialog'
 })
+const { playSounds } = useSound()
 
 interface PolicyDialogProps {
   type?: 'fade' | 'fall' | 'bounce' | 'zoom'
@@ -124,10 +127,12 @@ const onScrollEnd = (isEnd: boolean) => {
   emit('scrollEnd', isEnd)
 }
 const handleCancel = () => {
+  playSounds('close')
   emit('cancel')
   visible.value = false
 }
 const handleConfirm = () => {
+  playSounds('confirm')
   emit('confirm')
   visible.value = false
 }

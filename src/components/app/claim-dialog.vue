@@ -17,7 +17,7 @@
         @click.stop
       >
         <div class="app-claim-dialog__bg" aria-hidden="true" />
-        <GfrButton class="app-claim-dialog__close" aria-label="Close" @click="handleClose">
+        <GfrButton class="app-claim-dialog__close" aria-label="Close" :sound="false" @click="handleClose">
           <img src="/static/images/close@2x.png" alt="" />
         </GfrButton>
 
@@ -32,7 +32,7 @@
           </div>
           <p class="app-claim-dialog__reward-name">{{ reward.name }}</p>
 
-          <GfrButton class="app-claim-dialog__confirm" @click="handleConfirm">
+          <GfrButton class="app-claim-dialog__confirm" :sound="false" @click="handleConfirm">
             <span class="app-claim-dialog__confirm-text">{{ confirmText }}</span>
           </GfrButton>
 
@@ -47,9 +47,11 @@
 import GfrOverlay from '@/components/ui/overlay.vue'
 import GfrButton from '@/components/ui/button.vue'
 import { useStore } from '@/stores'
+import { useSound } from '@/composables/useSound'
 
 const store = useStore()
 const { fixTransify } = store
+const { playSounds } = useSound()
 
 defineOptions({
   name: 'AppClaimDialog'
@@ -84,11 +86,13 @@ const emit = defineEmits<{
 const visible = defineModel<boolean>('modelValue', { default: false })
 
 function handleClose() {
+  playSounds('close')
   visible.value = false
   emit('close')
 }
 
 function handleConfirm() {
+  playSounds('confirm')
   visible.value = false
   emit('confirm')
 }
@@ -202,18 +206,15 @@ function handleConfirm() {
 
 .app-claim-dialog__confirm {
   z-index: 1;
-  width: clamp(220px, 34vw, 309px);
-  height: clamp(64px, 10vw, 60px);
+  width: 360px;
+  height: 100px;
   background-image: url('/static/images/weilingqu_btn@2x.png');
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 0;
-  margin-top: 6px;
-  background-color: transparent;
+  // align-items: center;
 }
 
 .app-claim-dialog__confirm:hover {
@@ -225,10 +226,12 @@ function handleConfirm() {
   font-weight: var(--font-extra-bold);
   color: #fff;
   text-transform: uppercase;
+  line-height: 72px;
 }
 
-.app-claim-dialog__footer{
+.app-claim-dialog__footer {
   font-size: 22px;
-  color: rgb(107,107,107);
+  color: rgb(107, 107, 107);
+  margin-top: -36px;
 }
 </style>
