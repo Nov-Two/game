@@ -380,6 +380,7 @@ function onClaim(index: number) {
   .gfr-progress__reward-btn-text {
     line-height: 50px;
     font-size: 26px;
+    text-transform: uppercase;
   }
 }
 
